@@ -15,8 +15,8 @@
   noblank: true
 
 - type: linkedin
-   icon: 'fab fa-linkedin'
-   url:  'https://www.linkedin.com/in/chohyunjin/'                  # Fill with your Linkedin homepage
+  icon: 'fab fa-linkedin'
+  url:  'https://www.linkedin.com/in/chohyunjin/'                  # Fill with your Linkedin homepage
 #
 # - type: stack-overflow
 #   icon: 'fab fa-stack-overflow'
