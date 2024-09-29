@@ -1,0 +1,9 @@
+{
+  "name": "chojinie.github.io",
+  "lockfileVersion": 3,
+  "requires": true,
+  "packages": {},
+  "dependencies": {
+    "express": "^4.21.0"
+  }
+}
