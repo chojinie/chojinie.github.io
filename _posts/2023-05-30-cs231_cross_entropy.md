@@ -6,11 +6,6 @@ categories: [Machine Learning]
 author : <jincho>
 description : Cross Entropy에 대한 설명.
 related_posts: True
-toc:
-  sidebar: left
-<!--image:-->
-<!--  path: /assets/img/entropy.gif-->
-<!--  alt: cross entropy figure-->
 ---
 
 ## entropy(엔트로피)
