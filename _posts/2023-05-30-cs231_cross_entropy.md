@@ -47,7 +47,7 @@ n이 증가할 수록 log함수적으로 엔트로피는 증가하게 됩니다.
 
 h(p,q)는 오차를 의미합니다.
 
-![Desktip View]("/assets/img/pic76.jpg"){: .normal }
+![Desktip View](/assets/img/pic76.jpg){: .normal }
 
 
 예측된 확률값(p)들이 [0, 0, 1] , [0, 1, 0]과 같이 완전히 틀리게 되면 lg(0)이 되므로 크로스 엔트로피는 무한대로 커진다.
