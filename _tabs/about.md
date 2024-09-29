@@ -1,8 +1,8 @@
 ---
-icon: fas fa-about
+icon: fas fa-info-circle
 order: 4
 ---
-![Desktop View](/assets/img/prof_pic.jpg){: width="700" height="400" }
+![Desktop View](/assets/img/prof_pic.jpg){: width="175" height="100" }
 
 <p>
 Hi. I'm Jin.<br> 
