@@ -1,6 +1,6 @@
 ---
 icon: fas fa-about
-order: 1
+order: 4
 ---
 <p>
 Hi. I'm Jin.<br> 
