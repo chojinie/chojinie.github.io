@@ -2,6 +2,8 @@
 icon: fas fa-about
 order: 4
 ---
+![Desktop View](/assets/img/prof_pic.jpg){: width="700" height="400" }
+
 <p>
 Hi. I'm Jin.<br> 
 I'm studying Computer vision and AI in VILAB@CAU.<br></p>
