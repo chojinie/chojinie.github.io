@@ -73,6 +73,10 @@ analytics:
   fathom:
     id: # fill in your Fathom Site ID
 
+
+url: "https://chojinie.github.io/" # the base hostname & protocol for your site
+plugins:
+  - jekyll-sitemap
 plugins:
   - jekyll-seo-tag
 
