@@ -2,9 +2,9 @@
 
 source "https://rubygems.org"
 
-gem 'jekyll-seo-tag'
+# gem 'jekyll-seo-tag'
 
-gem 'jekyll-sitemap'
+# gem 'jekyll-sitemap'
 
 gem "jekyll-theme-chirpy", "~> 7.1", ">= 7.1.1"
 
