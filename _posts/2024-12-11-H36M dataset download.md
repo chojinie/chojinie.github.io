@@ -2,7 +2,7 @@
 title: H36M dataset download
 date: 2024-12-11
 tags: [h36m, dataset]
-categories: [information, research]
+categories: [research]
 author : <jincho>
 description : 데이터셋 다운로드 방법 기록
 related_posts: True
@@ -15,7 +15,7 @@ image:
 
 설치법 기록
 
-<a href="http://vision.imar.ro/human3.6m/description.php" style="color: blue; text-decoration: underline;">H3.6M homepage</a> </br>
+H3.6M homepage에서 데이터를 다운받는다.
 
 현재는 회원가입 받지 않아주는 듯 함. 어떻게 데이터 얻는지는 모르겠음. </br>
 
