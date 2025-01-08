@@ -47,6 +47,13 @@ docker save [옵션] <파일명> [이미지명]
 
 ex) docker save -o totitan.tar pytorch/ajahr:latest
 
+## 3. tar 다시 도커 이미지로 압축해제
+
+docker load -i [tar file]
+ex) docker load -i totitan.tar
+
+
+
 ## Reference
 
 https://mvje.tistory.com/168
