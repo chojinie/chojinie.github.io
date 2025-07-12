@@ -14,3 +14,16 @@ Here are some key questions that guide my research:
   <li><strong>Human Behavior Understanding Systems:</strong> Do models that perform tasks related to the human body—such as detecting or estimating human poses—truly understand the state of the person?</li>
   <li><strong>Foundation VLM models:</strong> Is it possible to build a vision-language foundation model that encompasses both expert-level and general domains?</li>
 </ul>
+
+## Pulications
+
+### 📘 International
+
+- **Hyunjin Cho\***, Giyun Choi, Jongwon Choi,  
+  "AJAHR: Amputated Joint Aware 3D Human Mesh Recovery",  
+  *In Proceedings of the IEEE/CVF International Conference on Computer Vision (ICCV)*, 2025.  
+  <span style="color:red;">[Acceptance Rate <strong>24.01%</strong> (2,698/11,239)]</span>  
+  [[Project](https://chojinie.github.io/project_AJAHR/)] [[Paper](https://arxiv.org/abs/2404.xxxxx)] [[Github](https://github.com/your-github-link)]
+
+
+### 📙 Domestic
