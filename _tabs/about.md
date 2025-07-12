@@ -15,15 +15,21 @@ Here are some key questions that guide my research:
   <li><strong>Foundation VLM models:</strong> Is it possible to build a vision-language foundation model that encompasses both expert-level and general domains?</li>
 </ul>
 
-<hr>
+<hr style="margin-top: 20px; margin-bottom: 10px;">  <!-- 간격 줄인 선 -->
 
-## Pulications
+## Publications
 
 ### 📘 International
 
 - **Hyunjin Cho\***, Giyun Choi\*, Jongwon Choi,  
   "AJAHR: Amputated Joint Aware 3D Human Mesh Recovery", *In Proceedings of the IEEE/CVF International Conference on Computer Vision (ICCV)*, 2025.<span style="color:red;">[Acceptance Rate <strong>24.01%</strong> (2,698/11,239)]</span>
    <br><em>\* Equal contribution</em>[[Project](https://chojinie.github.io/project_AJAHR/)] [[Paper](https://arxiv.org/abs/2404.xxxxx)] [[Github](https://github.com/your-github-link)]
+
+- Jongwook Choi, Kanghee Lee, **Hyunjin Cho**, Heejae Jo, Dohee Kim, Haejun Yang, Jongwon Choi,  
+  "Detecting High-Fidelity Human Interactions in Large-Scale Crowds", *International Technical Conference on Circuits/Systems, Computers, and Communications (ITC-CSCC)*, 2025.
+
+- Taehoon Kim, Jongwook Choi, **Hyunjin Cho**, HyoungJun Lim, Jongwon Choi,  
+  "Domain Generalization for Face Forgery Detection by Style Transfer", *IEEE International Conference on Consumer Electronics (ICCE)*, 2024.[[Paper](https://ieeexplore.ieee.org/abstract/document/10444215)]
 
 
 ### 📙 Domestic
