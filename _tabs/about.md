@@ -19,11 +19,9 @@ Here are some key questions that guide my research:
 
 ### 📘 International
 
-- **Hyunjin Cho\***, Giyun Choi, Jongwon Choi,  
-  "AJAHR: Amputated Joint Aware 3D Human Mesh Recovery",  
-  *In Proceedings of the IEEE/CVF International Conference on Computer Vision (ICCV)*, 2025.  
-  <span style="color:red;">[Acceptance Rate <strong>24.01%</strong> (2,698/11,239)]</span>  
-  [[Project](https://chojinie.github.io/project_AJAHR/)] [[Paper](https://arxiv.org/abs/2404.xxxxx)] [[Github](https://github.com/your-github-link)]
+- **Hyunjin Cho\***, Giyun Choi\*, Jongwon Choi,  
+  "AJAHR: Amputated Joint Aware 3D Human Mesh Recovery", *In Proceedings of the IEEE/CVF International Conference on Computer Vision (ICCV)*, 2025.<span style="color:red;">[Acceptance Rate <strong>24.01%</strong> (2,698/11,239)]</span>
+   <br><em>\* Equal contribution</em>[[Project](https://chojinie.github.io/project_AJAHR/)] [[Paper](https://arxiv.org/abs/2404.xxxxx)] [[Github](https://github.com/your-github-link)]
 
 
 ### 📙 Domestic
