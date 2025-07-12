@@ -15,6 +15,8 @@ Here are some key questions that guide my research:
   <li><strong>Foundation VLM models:</strong> Is it possible to build a vision-language foundation model that encompasses both expert-level and general domains?</li>
 </ul>
 
+<hr>
+
 ## Pulications
 
 ### 📘 International
