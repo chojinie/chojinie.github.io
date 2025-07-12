@@ -22,8 +22,7 @@ Here are some key questions that guide my research:
 ### 📘 International
 
 - **Hyunjin Cho\***, Giyun Choi\*, Jongwon Choi,  
-  "AJAHR: Amputated Joint Aware 3D Human Mesh Recovery", *In Proceedings of the IEEE/CVF International Conference on Computer Vision (ICCV)*, 2025.<span style="color:red;">[Acceptance Rate <strong>24.01%</strong> (2,698/11,239)]</span>
-   <br><em>\* Equal contribution</em>[[Project](https://chojinie.github.io/project_AJAHR/)] [[Paper](https://arxiv.org/abs/2404.xxxxx)] [[Github](https://github.com/your-github-link)]
+  "AJAHR: Amputated Joint Aware 3D Human Mesh Recovery", *In Proceedings of the IEEE/CVF International Conference on Computer Vision (ICCV)*, 2025.<span style="color:red;">[Acceptance Rate <strong>24.01%</strong> (2,698/11,239)]</span>[[Project](https://chojinie.github.io/project_AJAHR/)] [[Paper](https://arxiv.org/abs/2404.xxxxx)] [[Github](https://github.com/your-github-link)]<br><em>\* Equal contribution</em>
 
 - Jongwook Choi, Kanghee Lee, **Hyunjin Cho**, Heejae Jo, Dohee Kim, Haejun Yang, Jongwon Choi,  
   "Detecting High-Fidelity Human Interactions in Large-Scale Crowds", *International Technical Conference on Circuits/Systems, Computers, and Communications (ITC-CSCC)*, 2025.
@@ -31,5 +30,17 @@ Here are some key questions that guide my research:
 - Taehoon Kim, Jongwook Choi, **Hyunjin Cho**, HyoungJun Lim, Jongwon Choi,  
   "Domain Generalization for Face Forgery Detection by Style Transfer", *IEEE International Conference on Consumer Electronics (ICCE)*, 2024.[[Paper](https://ieeexplore.ieee.org/abstract/document/10444215)]
 
+- Minji Kwak, Suyeon Cha, **Hyunjin Cho**, Jongwon Choi,  
+  "DDATPose: Diffusion-based Domain Adaptation for 3D Human Pose Estimation", *Association for the Advancement of Artificial Intelligence (AAAI)*, 2024.(submission)
 
 ### 📙 Domestic
+
+
+<hr style="margin-top: 20px; margin-bottom: 10px;">  <!-- 간격 줄인 선 -->
+
+## Project
+
+- 딥페이크
+- 저조도
+- 인천시 자율제조
+- 데이터셋 구축
