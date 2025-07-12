@@ -1,5 +1,5 @@
 ---
-title: Curriculum Vitae
+title: CV
 icon: fas fa-file-alt
 order: 5
 ---
