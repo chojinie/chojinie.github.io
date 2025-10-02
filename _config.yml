@@ -16,6 +16,8 @@ timezone:
 
 title: Hyunjin Cho
 
+favicon : "/assets/img/favicons/teaser.png"
+
 tagline: Notebook # it will display as the subtitle
 
 description: >- # used by seo meta and the atom feed
