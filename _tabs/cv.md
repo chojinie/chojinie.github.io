@@ -3,9 +3,7 @@ title: CV
 icon: fas fa-file-alt
 order: 5
 ---
-<h1>Curriculum Vitae</h1>
-test test
 
-dddd???
+# Curriculum Vitae
 
----
+<embed src="/assets/cv/Hyunjin_Cho.pdf" type="application/pdf" width="100%" height="800px" />
