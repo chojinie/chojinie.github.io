@@ -4,7 +4,7 @@ date: 2025-12-02
 tags: [research, information]
 categories: [research]
 author : <jincho>
-description : When if gdown, curl commands are not activated
+description : When gdown and curl commands don’t work
 related_posts: True
 
 ---
