@@ -46,7 +46,7 @@
                 </p>
               </td>
               <td style="padding:2.5%;width:37%;max-width:37%;overflow:hidden;">
-                <img style="width:70%;display:block;margin:auto;height:200px;object-fit:cover;border-radius:50%;object-position:center 30%;" alt="profile photo" src="images/chohyunjin.jpg">
+                <img style="width:70%;display:block;margin:auto;height:200px;object-fit:cover;object-position:center 30%;" alt="profile photo" src="images/chohyunjin.jpg">
               </td>
             </tr>
           </tbody></table>
@@ -64,37 +64,30 @@
           <table style="width:100%;border:0px;border-spacing:0px 10px;border-collapse:separate;margin-right:auto;margin-left:auto;"><tbody>
 
             <tr onmouseout="ajahr_stop()" onmouseover="ajahr_start()" bgcolor="#ffffd0">
-              <td style="padding:16px;width:35%;vertical-align:middle">
-                <div class="one">
-                  <div class="two" id='ajahr_image'>
-                    <img src='images/AJAHR_teaser.jpg' style="width:100%">
-                  </div>
-                  <img src='images/AJAHR_teaser.jpg' style="width:100%">
-                </div>
+              <td style="padding:16px;width:45%;vertical-align:middle">
+                <img id='ajahr_image_main' src='images/AJAHR_teaser.jpg' style="width:100%;display:block;">
                 <script type="text/javascript">
                   function ajahr_start() {
-                    document.getElementById('ajahr_image').style.opacity = "1";
+                    document.getElementById('ajahr_image_main').style.opacity = "1";
                   }
                   function ajahr_stop() {
-                    document.getElementById('ajahr_image').style.opacity = "0";
+                    document.getElementById('ajahr_image_main').style.opacity = "1";
                   }
-                  ajahr_stop()
                 </script>
               </td>
-              <td style="padding:8px;width:65%;vertical-align:middle">
+              <td style="padding:16px;width:55%;vertical-align:middle">
                 <a href="https://arxiv.org/abs/2509.19939">
                   <span class="papertitle">AJAHR: Amputated Joint Aware 3D Human Mesh Recovery</span>
                 </a>
                 <br>
-                <strong>Hyunjin Cho</strong>*, <strong>Giyun Choi</strong>*, <a href="https://www.vilab.cau.ac.kr/">Jongwon Choi</a>
+                <strong>Hyunjin Cho</strong>*, Giyun Choi*, <a href="https://www.vilab.cau.ac.kr/">Jongwon Choi</a>
                 <br>
                 <em>ICCV</em>, 2025 &nbsp;(* Equal Contribution)
-                <br>
+                <br><br>
                 <a href="https://chojinie.github.io/project_AJAHR/">project page</a> /
                 <a href="https://arxiv.org/abs/2509.19939">arXiv</a> /
                 <a href="https://chojinie.github.io/project_AJAHR/static/pdfs/8295_supp.pdf">supplement</a> /
                 <a href="data/cho2025ajahr.bib">bibtex</a>
-                <p>Existing human mesh recovery methods assume a standard body structure, overlooking diverse anatomical conditions such as limb loss. We propose AJAHR, an adaptive pose estimation framework that improves 3D mesh reconstruction for individuals with limb loss, integrating a body-part amputation classifier jointly trained with the mesh recovery network. We also introduce Amputee 3D (A3D), a synthetic dataset offering diverse amputee poses for robust training.</p>
               </td>
             </tr>
 

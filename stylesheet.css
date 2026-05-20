@@ -110,14 +110,14 @@ h2 {
 }
 
 .one {
-  width: 300px;
-  height: 160px;
+  width: 280px;
+  height: 150px;
   position: relative;
 }
 
 .two {
-  width: 300px;
-  height: 160px;
+  width: 280px;
+  height: 150px;
   position: absolute;
   transition: opacity .2s ease-in-out;
   -moz-transition: opacity .2s ease-in-out;
