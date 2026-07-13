@@ -51,6 +51,74 @@
         transform: scale(1.20);
       }
 
+
+      .section-heading {
+        padding: 16px;
+        width: 100%;
+        vertical-align: middle;
+      }
+
+      .experience-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 22px 24px;
+        padding: 4px 16px 28px 16px;
+        box-sizing: border-box;
+      }
+
+      .experience-card {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        min-height: 106px;
+        padding: 12px 14px;
+        box-sizing: border-box;
+      }
+
+      .experience-logo {
+        width: 112px;
+        height: 68px;
+        object-fit: contain;
+        flex-shrink: 0;
+      }
+
+      .experience-info {
+        min-width: 0;
+        font-size: 13px;
+        line-height: 1.48;
+      }
+
+      .experience-info strong {
+        font-size: 13.5px;
+      }
+
+      .service-logo-group {
+        width: 112px;
+        flex-shrink: 0;
+        text-align: center;
+      }
+
+      .service-logo-main {
+        width: 96px;
+        height: 48px;
+        object-fit: contain;
+        display: block;
+        margin: 0 auto 6px auto;
+      }
+
+      .service-logo-row {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+      }
+
+      .service-logo-small {
+        width: 50px;
+        height: 32px;
+        object-fit: contain;
+      }
+
       @media screen and (max-width: 650px) {
         body {
           margin: 0;
@@ -97,6 +165,26 @@
           text-align: center !important;
           margin-top: 0;
           margin-bottom: 8px;
+        }
+
+        .experience-grid {
+          grid-template-columns: 1fr;
+          gap: 12px;
+          padding: 0 16px 24px 16px;
+        }
+
+        .experience-card {
+          min-height: auto;
+          padding: 10px 4px;
+        }
+
+        .experience-logo,
+        .service-logo-group {
+          width: 100px;
+        }
+
+        .experience-logo {
+          height: 60px;
         }
       }
     </style>
@@ -211,82 +299,125 @@
             </tr>
           </tbody></table>
 
+          <!-- Education -->
+          <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;"><tbody>
+            <tr>
+              <td class="section-heading">
+                <h2>EDUCATION</h2>
+              </td>
+            </tr>
+          </tbody></table>
+
+          <div class="experience-grid">
+            <div class="experience-card">
+              <img src="images/hcvl.webp" class="experience-logo" alt="University of Birmingham">
+              <div class="experience-info">
+                <strong>PhD Student, Computer Science</strong><br>
+                University of Birmingham, UK<br>
+                2026 (Incoming)
+              </div>
+            </div>
+
+            <div class="experience-card">
+              <img src="images/cau.png" class="experience-logo" alt="Chung-Ang University">
+              <div class="experience-info">
+                <strong>M.S. in Advanced Imaging Science</strong><br>
+                Chung-Ang University, Seoul, Korea<br>
+                Advisor: Prof. Jongwon Choi &nbsp;·&nbsp; 2025
+              </div>
+            </div>
+
+            <div class="experience-card">
+              <img src="images/cau.png" class="experience-logo" alt="Chung-Ang University">
+              <div class="experience-info">
+                <strong>B.S. in Electrical and Electronic Engineering</strong><br>
+                Chung-Ang University, Seoul, Korea<br>
+                2019
+              </div>
+            </div>
+          </div>
+
           <!-- Experience -->
           <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;"><tbody>
             <tr>
-              <td style="padding:16px;width:100%;vertical-align:middle">
+              <td class="section-heading">
                 <h2>EXPERIENCE</h2>
               </td>
             </tr>
           </tbody></table>
 
-          <table style="width:100%;border:0px;border-spacing:0px 20px;border-collapse:separate;margin-right:auto;margin-left:auto;"><tbody>
+          <div class="experience-grid">
+            <div class="experience-card">
+              <img src="images/kitech.png" class="experience-logo" alt="KITECH">
+              <div class="experience-info">
+                <strong>Researcher</strong><br>
+                Manufacturing AI Research Center at KITECH (MAIK)<br>
+                Incheon, Korea &nbsp;·&nbsp; 2026
+              </div>
+            </div>
 
-            <tr>
-              <td style="padding:16px;text-align:center;vertical-align:middle">
-                <img src="images/hcvl.webp" style="width:300px;height:120px;object-fit:contain;"><br><br>
-                <strong>PhD Student, Computer Science, University of Birmingham, Edgbaston, UK</strong><br>
-                Sep.2026 (Incoming)
-              </td>
-            </tr>
-
-            <tr>
-              <td style="padding:16px;text-align:center;vertical-align:middle">
-                <img src="images/kitech.png" style="width:200px;height:80px;object-fit:contain;"><br><br>
-                <strong>Researcher, Manufacturing AI Research Center at KITECH(MAIK), Incheon, Korea</strong><br>
-                2025 ~ Present
-              </td>
-            </tr>
-
-            <tr>
-              <td style="padding:16px;text-align:center;vertical-align:middle">
-                <img src="images/snuailab.png" style="width:200px;height:80px;object-fit:contain;"><br><br>
-                <strong>Research Intern, SNU AILab, Suwon, Korea</strong><br>
+            <div class="experience-card">
+              <img src="images/snuailab.png" class="experience-logo" alt="SNU AILab">
+              <div class="experience-info">
+                <strong>Research Intern</strong><br>
+                SNU AILab, Suwon, Korea<br>
                 2025
-              </td>
-            </tr>
+              </div>
+            </div>
 
+            <div class="experience-card">
+              <img src="images/vilab.png" class="experience-logo" alt="VILAB">
+              <div class="experience-info">
+                <strong>Research Assistant</strong><br>
+                VILAB, Chung-Ang University, Seoul, Korea<br>
+                2025
+              </div>
+            </div>
+
+            <div class="experience-card">
+              <img src="images/fasoo.png" class="experience-logo" alt="Fasoo">
+              <div class="experience-info">
+                <strong>SDR</strong><br>
+                Fasoo, Seoul, Korea<br>
+                2023
+              </div>
+            </div>
+          </div>
+
+          <!-- Other Experience -->
+          <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;"><tbody>
             <tr>
-              <td style="padding:16px;text-align:center;vertical-align:middle">
-                <img src="images/cau.png" style="width:300px;height:120px;object-fit:contain;"><br><br>
-                <strong>M.S. in Advanced Imaging Science, Chung-Ang University (CAU), Seoul, Korea</strong><br>
-                Advisor: Prof. Jongwon Choi &nbsp;·&nbsp; 2023 ~ 2025
+              <td class="section-heading">
+                <h2>OTHER EXPERIENCE</h2>
               </td>
             </tr>
-
-            <tr>
-              <td style="padding:16px;text-align:center;vertical-align:middle">
-                <img src="images/vilab.png" style="width:200px;height:80px;object-fit:contain;"><br><br>
-                <strong>Research Assistant, VILAB, Chung-Ang University (CAU), Seoul, Korea</strong><br>
-                2023 ~ 2025
-              </td>
-            </tr>
-
-            <tr>
-              <td style="padding:16px;text-align:center;vertical-align:middle">
-                <img src="images/fasoo.png" style="width:200px;height:80px;object-fit:contain;"><br><br>
-                <strong>SDR, Fasoo, Seoul, Korea</strong><br>
-                2020 ~ 2023
-              </td>
-            </tr>
-
-            <tr>
-              <td style="padding:16px;text-align:center;vertical-align:middle">
-                <img src="images/cau.png" style="width:300px;height:120px;object-fit:contain;"><br><br>
-                <strong>B.S. in Electrical and Electronic Engineering, Chung-Ang University (CAU), Seoul, Korea</strong><br>
-                2010 ~ 2019
-              </td>
-            </tr>
-
-            <tr>
-              <td style="padding:16px;text-align:center;vertical-align:middle">
-                <img src="images/angrang.png" style="width:250px;height:100px;object-fit:contain;"><br><br>
-                <strong>University PR Ambassador (중앙사랑), 20th Generation, Chung-Ang University (CAU), Seoul, Korea</strong><br>
-                Public Relations Office Intern &nbsp;·&nbsp; 2012 ~ 2013
-              </td>
-            </tr>
-
           </tbody></table>
+
+          <div class="experience-grid">
+            <div class="experience-card">
+              <div class="service-logo-group" aria-label="Alternative military service and assigned institutions">
+                <img src="images/kongik.png" class="service-logo-main" alt="Social Service Agent">
+                <div class="service-logo-row">
+                  <img src="images/itc.jpg" class="service-logo-small" alt="Incheon Transit Corporation">
+                  <img src="images/okryun.jfif" class="service-logo-small" alt="Okryun Girls' High School">
+                </div>
+              </div>
+              <div class="experience-info">
+                <strong>Social Service Agent (Alternative Military Service)</strong><br>
+                Republic of Korea<br>
+                Served at Incheon Transit Corporation and Okryun Girls' High School &nbsp;·&nbsp; 2015
+              </div>
+            </div>
+
+            <div class="experience-card">
+              <img src="images/angrang.png" class="experience-logo" alt="Chung-Ang University PR Ambassador">
+              <div class="experience-info">
+                <strong>University PR Ambassador (중앙사랑), 20th Generation</strong><br>
+                Chung-Ang University, Seoul, Korea<br>
+                Public Relations Office Intern &nbsp;·&nbsp; 2013
+              </div>
+            </div>
+          </div>
         </td>
       </tr>
     </tbody></table>
