@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>우리의 시간 · Par Avion</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=IBM+Plex+Sans+KR:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F5F2EA;
+  --ink:#22303E;
+  --red:#C2372B;
+  --blue:#2F5794;
+  --stamp:#FFFDF6;
+  --faint:#8A8577;
+  --line:#D9D3C4;
+  --hole:3px; --gap:10px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:'IBM Plex Sans KR',sans-serif;
+  min-height:100vh;
+}
+/* ── airmail envelope stripe ───────────────────────── */
+.airmail{
+  height:12px;
+  background:repeating-linear-gradient(135deg,
+    var(--red) 0 14px, var(--paper) 14px 20px,
+    var(--blue) 20px 34px, var(--paper) 34px 40px);
+}
+.wrap{max-width:880px;margin:0 auto;padding:28px 18px 64px}
+
+/* ── header ────────────────────────────────────────── */
+header{text-align:center;margin-bottom:30px}
+header h1{
+  font-family:'Gowun Batang',serif;
+  font-weight:700;font-size:clamp(26px,5vw,38px);
+  letter-spacing:.02em;
+}
+.route{
+  display:flex;align-items:center;justify-content:center;gap:12px;
+  margin-top:10px;color:var(--faint);
+  font-family:'IBM Plex Mono',monospace;font-size:13px;letter-spacing:.18em;
+}
+.route .path{
+  flex:0 1 180px;height:1px;position:relative;
+  border-top:2px dotted var(--line);
+}
+.route .path::after{
+  content:'✈';position:absolute;top:-11px;left:0;
+  color:var(--red);font-size:14px;letter-spacing:0;
+  animation:fly 9s linear infinite;
+}
+@keyframes fly{from{left:0;opacity:0}8%{opacity:1}92%{opacity:1}to{left:calc(100% - 14px);opacity:0}}
+@media (prefers-reduced-motion:reduce){.route .path::after{animation:none;left:calc(50% - 7px)}}
+
+/* ── clocks ────────────────────────────────────────── */
+.clocks{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:560px){.clocks{grid-template-columns:1fr}}
+.clock{
+  background:var(--stamp);
+  border:1px solid var(--line);
+  border-radius:6px;
+  padding:20px 22px 18px;
+  position:relative;
+}
+.clock .postcode{ /* postmark corner */
+  position:absolute;top:14px;right:14px;
+  width:46px;height:46px;border:1.5px dashed currentColor;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.05em;
+  transform:rotate(-12deg);opacity:.55;pointer-events:none;
+}
+.clock.a .postcode{color:var(--red)}
+.clock.b .postcode{color:var(--blue)}
+.clock .city{display:flex;align-items:center;gap:8px}
+.clock .daynight{font-size:15px}
+.tz-select{
+  font-family:'Gowun Batang',serif;font-weight:700;font-size:16px;
+  color:var(--ink);background:transparent;
+  border:none;border-bottom:1.5px dashed var(--line);
+  padding:2px 22px 3px 2px;cursor:pointer;max-width:200px;
+  appearance:none;-webkit-appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%238A8577' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 4px center;
+}
+.tz-select:hover{border-bottom-color:var(--ink)}
+.tz-select:focus-visible{outline:2px solid var(--blue);outline-offset:2px;border-radius:3px}
+.clock .time{
+  font-family:'IBM Plex Mono',monospace;font-weight:600;
+  font-size:clamp(34px,7vw,44px);letter-spacing:.02em;
+  margin-top:8px;font-variant-numeric:tabular-nums;
+}
+.clock .time small{font-size:.5em;color:var(--faint);font-weight:500}
+.clock .date{margin-top:4px;color:var(--faint);font-size:13.5px}
+.badge{
+  display:inline-block;margin-top:8px;padding:2px 8px;border-radius:99px;
+  font-size:11px;font-weight:600;letter-spacing:.05em;
+  background:var(--blue);color:#fff;
+}
+.diff{
+  text-align:center;margin:16px 0 40px;font-size:14.5px;color:var(--ink);
+}
+.diff b{color:var(--red)}
+
+/* ── calendar ──────────────────────────────────────── */
+.cal-head{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:6px;flex-wrap:wrap;gap:10px;
+}
+.pickers{display:flex;gap:10px;align-items:baseline}
+.pick{
+  font-family:'Gowun Batang',serif;font-weight:700;font-size:21px;
+  color:var(--ink);background:transparent;
+  border:none;border-bottom:1.5px dashed var(--line);
+  padding:2px 20px 3px 2px;cursor:pointer;
+  appearance:none;-webkit-appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%238A8577' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 2px center;
+}
+.pick:hover{border-bottom-color:var(--ink)}
+.pick:focus-visible{outline:2px solid var(--blue);outline-offset:2px;border-radius:3px}
+.controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.seg{
+  display:flex;border:1px solid var(--line);border-radius:6px;
+  overflow:hidden;background:var(--stamp);
+}
+.seg button{
+  border:none;background:transparent;color:var(--faint);
+  padding:0 14px;height:34px;font-family:inherit;font-size:13px;
+  font-weight:600;cursor:pointer;
+}
+.seg button + button{border-left:1px solid var(--line)}
+.seg button.on{background:var(--ink);color:#fff}
+.seg button:focus-visible{outline:2px solid var(--blue);outline-offset:-2px}
+.range-label{
+  color:var(--faint);font-size:13.5px;margin-bottom:12px;
+  font-family:'IBM Plex Mono',monospace;
+}
+.range-label:empty{margin-bottom:6px}
+.cal-head .nav{display:flex;gap:6px}
+.cal-head button{
+  border:1px solid var(--line);background:var(--stamp);color:var(--ink);
+  width:34px;height:34px;border-radius:6px;cursor:pointer;font-size:15px;
+}
+.cal-head button:hover{border-color:var(--ink)}
+.cal-head button:focus-visible,.day:focus-visible,.btn:focus-visible{
+  outline:2px solid var(--blue);outline-offset:2px;
+}
+.weekdays,.grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.weekdays div{
+  text-align:center;font-size:12px;color:var(--faint);
+  font-family:'IBM Plex Mono',monospace;padding:4px 0 8px;letter-spacing:.1em;
+}
+.weekdays div:first-child{color:var(--red)}
+.day{
+  aspect-ratio:1/1.15;
+  background:var(--stamp);border:1px solid var(--line);border-radius:5px;
+  padding:6px;cursor:pointer;position:relative;overflow:hidden;
+  display:flex;flex-direction:column;align-items:center;
+  transition:border-color .15s, transform .15s;
+}
+.day:hover{border-color:var(--ink);transform:translateY(-1px)}
+.day.blank{background:transparent;border:none;cursor:default;transform:none}
+.day .num{
+  font-family:'IBM Plex Mono',monospace;font-size:12.5px;align-self:flex-start;
+}
+.day.sun .num{color:var(--red)}
+.day.today .num{
+  color:#fff;background:var(--red);border-radius:50%;
+  width:20px;height:20px;display:flex;align-items:center;justify-content:center;
+}
+/* perforated photo stamp on the date */
+.mini-stamp{
+  margin-top:2px;width:72%;max-width:64px;aspect-ratio:1;
+  background:
+    radial-gradient(circle var(--hole), var(--paper) 98%, #0000) 0 calc(-.5*var(--gap)) / var(--gap) var(--gap) repeat-x,
+    radial-gradient(circle var(--hole), var(--paper) 98%, #0000) left 0 bottom calc(-.5*var(--gap)) / var(--gap) var(--gap) repeat-x,
+    radial-gradient(circle var(--hole), var(--paper) 98%, #0000) calc(-.5*var(--gap)) 0 / var(--gap) var(--gap) repeat-y,
+    radial-gradient(circle var(--hole), var(--paper) 98%, #0000) right calc(-.5*var(--gap)) top 0 / var(--gap) var(--gap) repeat-y,
+    #fff;
+  padding:5px;
+  box-shadow:0 1px 3px rgba(34,48,62,.18);
+}
+.mini-stamp img{width:100%;height:100%;object-fit:cover;display:block}
+.day .dot-note{
+  position:absolute;bottom:5px;width:5px;height:5px;border-radius:50%;
+  background:var(--blue);
+}
+/* 주 단위 보기: 칸을 세로로 길게, 메모 미리보기 표시 */
+.grid.week .day{aspect-ratio:auto;min-height:128px;justify-content:flex-start}
+.grid.week .mini-stamp{max-width:56px}
+.mini-note{
+  margin-top:5px;font-size:11px;line-height:1.4;color:var(--faint);
+  text-align:center;overflow:hidden;display:-webkit-box;
+  -webkit-line-clamp:3;-webkit-box-orient:vertical;word-break:break-all;
+}
+/* 하루 단위 보기: 큰 카드 하나 */
+.grid.single{grid-template-columns:1fr}
+.day-single{
+  background:var(--stamp);border:1px solid var(--line);border-radius:6px;
+  padding:28px 20px 26px;cursor:pointer;text-align:center;
+  font-family:inherit;color:var(--ink);
+  transition:border-color .15s;
+}
+.day-single:hover{border-color:var(--ink)}
+.day-single:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.day-single .ds-note{
+  margin:14px auto 0;max-width:340px;font-size:15px;line-height:1.7;
+  white-space:pre-wrap;word-break:break-all;
+}
+.day-single .ds-empty{color:var(--faint);font-size:14px;margin-top:8px}
+
+/* ── modal ─────────────────────────────────────────── */
+dialog{
+  border:none;border-radius:8px;padding:0;
+  background:var(--stamp);color:var(--ink);
+  width:min(92vw,420px);
+  box-shadow:0 14px 50px rgba(34,48,62,.3);
+}
+dialog::backdrop{background:rgba(34,48,62,.45)}
+.modal-airmail{height:8px;background:repeating-linear-gradient(135deg,
+  var(--red) 0 10px, var(--stamp) 10px 15px, var(--blue) 15px 25px, var(--stamp) 25px 30px)}
+.modal-body{padding:20px 22px 24px}
+.modal-body h3{
+  font-family:'Gowun Batang',serif;font-size:19px;font-weight:700;margin-bottom:14px;
+}
+.big-stamp{
+  width:min(240px,70%);margin:0 auto 6px;aspect-ratio:1;position:relative;
+  background:
+    radial-gradient(circle var(--hole), var(--stamp) 98%, #0000) 0 calc(-.5*var(--gap)) / var(--gap) var(--gap) repeat-x,
+    radial-gradient(circle var(--hole), var(--stamp) 98%, #0000) left 0 bottom calc(-.5*var(--gap)) / var(--gap) var(--gap) repeat-x,
+    radial-gradient(circle var(--hole), var(--stamp) 98%, #0000) calc(-.5*var(--gap)) 0 / var(--gap) var(--gap) repeat-y,
+    radial-gradient(circle var(--hole), var(--stamp) 98%, #0000) right calc(-.5*var(--gap)) top 0 / var(--gap) var(--gap) repeat-y,
+    #fff;
+  padding:9px;box-shadow:0 2px 8px rgba(34,48,62,.2);
+}
+.big-stamp img{width:100%;height:100%;object-fit:cover;display:block}
+.big-stamp .postmark{
+  position:absolute;right:-16px;top:-16px;width:76px;height:76px;
+  border:2px dashed var(--red);border-radius:50%;color:var(--red);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  font-family:'IBM Plex Mono',monospace;font-size:10px;line-height:1.4;
+  transform:rotate(10deg);background:rgba(255,253,246,.6);
+  pointer-events:none;
+}
+.empty-stamp{
+  border:1.5px dashed var(--line);border-radius:6px;
+  padding:34px 10px;text-align:center;color:var(--faint);font-size:13.5px;
+  margin-bottom:6px;
+}
+.modal-body textarea{
+  width:100%;margin-top:12px;padding:10px 12px;
+  border:1px solid var(--line);border-radius:6px;background:#fff;
+  font-family:inherit;font-size:14px;resize:vertical;min-height:64px;color:var(--ink);
+}
+.modal-body textarea:focus{outline:2px solid var(--blue);outline-offset:1px}
+.btn-row{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+.btn{
+  flex:1;padding:10px 12px;border-radius:6px;cursor:pointer;
+  font-family:inherit;font-size:14px;font-weight:600;
+  border:1px solid var(--line);background:#fff;color:var(--ink);
+}
+.btn.primary{background:var(--red);border-color:var(--red);color:#fff}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn.ghost:hover{border-color:var(--ink)}
+.btn.danger{color:var(--red);border-color:var(--red);flex:0 0 auto}
+input[type=file]{display:none}
+
+footer{
+  margin-top:52px;text-align:center;color:var(--faint);font-size:12.5px;
+  font-family:'IBM Plex Mono',monospace;letter-spacing:.06em;
+}
+.sync-state{margin-top:6px}
+.sync-state.on{color:var(--blue)}
+</style>
+</head>
+<body>
+
+<div class="airmail" aria-hidden="true"></div>
+
+<div class="wrap">
+  <header>
+    <h1>우리의 시간</h1>
+    <div class="route" aria-label="두 도시 사이">
+      <span id="route-a">SEL</span><span class="path" aria-hidden="true"></span><span id="route-b">LDN</span>
+    </div>
+  </header>
+
+  <section class="clocks" aria-label="현재 시각">
+    <div class="clock a">
+      <span class="postcode" id="code-a">SEL</span>
+      <div class="city">
+        <span class="daynight" id="icon-a">☀️</span>
+        <select class="tz-select" id="tz-a" aria-label="첫 번째 도시 선택"></select>
+      </div>
+      <div class="time" id="time-a">--:--<small> --</small></div>
+      <div class="date" id="date-a"></div>
+      <span class="badge" id="dst-a" hidden>서머타임 적용 중</span>
+    </div>
+    <div class="clock b">
+      <span class="postcode" id="code-b">LDN</span>
+      <div class="city">
+        <span class="daynight" id="icon-b">☀️</span>
+        <select class="tz-select" id="tz-b" aria-label="두 번째 도시 선택"></select>
+      </div>
+      <div class="time" id="time-b">--:--<small> --</small></div>
+      <div class="date" id="date-b"></div>
+      <span class="badge" id="dst-b" hidden>서머타임 적용 중</span>
+    </div>
+  </section>
+  <p class="diff" id="diff-line"></p>
+
+  <section aria-label="스탬프 달력">
+    <div class="cal-head">
+      <div class="pickers">
+        <select class="pick" id="year-sel" aria-label="연도 선택"></select>
+        <select class="pick" id="month-sel" aria-label="월 선택"></select>
+      </div>
+      <div class="controls">
+        <div class="seg" role="group" aria-label="보기 방식">
+          <button data-mode="day">일</button>
+          <button data-mode="week">주</button>
+          <button data-mode="month">월</button>
+        </div>
+        <div class="nav">
+          <button id="prev" aria-label="이전">‹</button>
+          <button id="today-btn" aria-label="오늘로" style="width:auto;padding:0 12px;font-size:13px">오늘</button>
+          <button id="next" aria-label="다음">›</button>
+        </div>
+      </div>
+    </div>
+    <div class="range-label" id="range-label"></div>
+    <div class="weekdays" id="weekdays" aria-hidden="true">
+      <div>SUN</div><div>MON</div><div>TUE</div><div>WED</div><div>THU</div><div>FRI</div><div>SAT</div>
+    </div>
+    <div class="grid" id="grid"></div>
+  </section>
+
+  <footer>
+    PAR AVION · WHEREVER WE ARE
+    <div class="sync-state" id="sync-state">이 기기에만 저장 중 (Firebase 미연결)</div>
+  </footer>
+</div>
+
+<!-- 날짜 상세 모달 -->
+<dialog id="day-modal">
+  <div class="modal-airmail" aria-hidden="true"></div>
+  <div class="modal-body">
+    <h3 id="modal-title"></h3>
+    <div id="stamp-area"></div>
+    <label class="btn ghost" for="file-input" style="display:block;text-align:center" id="upload-label">사진 붙이기</label>
+    <input type="file" id="file-input" accept="image/*">
+    <textarea id="note-input" placeholder="이 날의 한 줄 (예: 오늘 저녁 9시에 통화하자!)"></textarea>
+    <div class="btn-row">
+      <button class="btn danger" id="delete-btn" hidden>지우기</button>
+      <button class="btn ghost" id="close-btn">닫기</button>
+      <button class="btn primary" id="save-btn">스탬프 찍기</button>
+    </div>
+  </div>
+</dialog>
+
+<script>
+/* ═══════════════════════════════════════════════════════════
+   ① Firebase 연동 (선택사항 — 비워두면 이 기기에만 저장됩니다)
+
+   둘이서 스탬프를 실시간 공유하려면:
+   1. https://console.firebase.google.com 에서 새 프로젝트 생성 (무료)
+   2. 웹 앱 추가 → firebaseConfig 값을 아래에 붙여넣기
+   3. 빌드 > Firestore Database 만들기 (테스트 모드로 시작)
+   4. 저장 후 git push — 두 사람 모두 같은 주소로 접속하면 자동 동기화
+   ═══════════════════════════════════════════════════════════ */
+const firebaseConfig = null;
+/* 예시 — 콘솔에서 복사한 객체를 그대로 붙여넣으면 됩니다:
+const firebaseConfig = {
+  apiKey: "...",
+  authDomain: "...",
+  projectId: "...",
+  storageBucket: "...",
+  messagingSenderId: "...",
+  appId: "..."
+};
+*/
+const COUPLE_ID = "our-room"; // 우리 둘만의 방 이름 (원하는 문자열로)
+
+/* ── 도시 목록 ─────────────────────────────────────
+   자주 가는 곳: 한글 이름 + 소인 코드. 그 외 전 세계 타임존 전체 선택 가능 */
+const CITIES = [
+  ['Asia/Seoul','서울','SEL'],
+  ['Europe/London','런던','LDN'],
+  ['America/Los_Angeles','로스앤젤레스','LAX'],
+  ['America/Vancouver','밴쿠버','YVR'],
+  ['America/Denver','덴버','DEN'],
+  ['America/Chicago','시카고','CHI'],
+  ['America/New_York','뉴욕','NYC'],
+  ['Pacific/Honolulu','호놀룰루','HNL'],
+  ['Europe/Paris','파리','PAR'],
+  ['Europe/Berlin','베를린','BER'],
+  ['Europe/Zurich','취리히','ZRH'],
+  ['Europe/Rome','로마','ROM'],
+  ['Asia/Tokyo','도쿄','TYO'],
+  ['Asia/Singapore','싱가포르','SIN'],
+  ['Asia/Hong_Kong','홍콩','HKG'],
+  ['Asia/Dubai','두바이','DXB'],
+  ['Australia/Sydney','시드니','SYD'],
+];
+const cityName = tz => (CITIES.find(c => c[0] === tz)?.[1]) || tz.split('/').pop().replaceAll('_',' ');
+const cityCode = tz => (CITIES.find(c => c[0] === tz)?.[2]) || tz.split('/').pop().replaceAll('_','').slice(0,3).toUpperCase();
+
+const TZ_KEY = 'our-time-tz-v1';
+let tzA = 'Asia/Seoul', tzB = 'Europe/London';
+try{
+  const saved = JSON.parse(localStorage.getItem(TZ_KEY));
+  if (saved?.a) tzA = saved.a;
+  if (saved?.b) tzB = saved.b;
+}catch(e){}
+
+function fillSelect(sel, current){
+  const gFav = document.createElement('optgroup'); gFav.label = '자주 가는 곳';
+  for (const [tz, name] of CITIES){
+    const o = new Option(name, tz); gFav.appendChild(o);
+  }
+  sel.appendChild(gFav);
+  try{
+    const all = Intl.supportedValuesOf('timeZone');
+    const gAll = document.createElement('optgroup'); gAll.label = '전체 시간대';
+    for (const tz of all){
+      if (CITIES.some(c => c[0] === tz)) continue;
+      gAll.appendChild(new Option(tz.replaceAll('_',' '), tz));
+    }
+    sel.appendChild(gAll);
+  }catch(e){ /* 구형 브라우저: 즐겨찾기만 표시 */ }
+  sel.value = current;
+}
+const selA = document.getElementById('tz-a'), selB = document.getElementById('tz-b');
+fillSelect(selA, tzA); fillSelect(selB, tzB);
+function onTzChange(){
+  tzA = selA.value; tzB = selB.value;
+  localStorage.setItem(TZ_KEY, JSON.stringify({a: tzA, b: tzB}));
+  document.getElementById('route-a').textContent = cityCode(tzA);
+  document.getElementById('route-b').textContent = cityCode(tzB);
+  document.getElementById('code-a').textContent = cityCode(tzA);
+  document.getElementById('code-b').textContent = cityCode(tzB);
+  tick(); renderCalendar();
+}
+selA.addEventListener('change', onTzChange);
+selB.addEventListener('change', onTzChange);
+
+/* ── 시계 ─────────────────────────────────────────── */
+const fmt = (tz, opt) => new Intl.DateTimeFormat('ko-KR', {timeZone: tz, ...opt});
+const pad = n => String(n).padStart(2, '0');
+
+function tzParts(tz){
+  return Object.fromEntries(
+    fmt(tz, {hour:'2-digit', minute:'2-digit', second:'2-digit', hourCycle:'h23',
+             year:'numeric', month:'long', day:'numeric', weekday:'long'})
+    .formatToParts(new Date()).map(x => [x.type, x.value]));
+}
+function offsetAt(tz, date){
+  const l = new Date(date.toLocaleString('en-US', {timeZone: tz}));
+  const u = new Date(date.toLocaleString('en-US', {timeZone: 'UTC'}));
+  return Math.round((l - u) / 60000); // 분 단위
+}
+function dstInfo(tz){
+  // 1월/7월 오프셋 비교 → 남반구(1월이 여름)까지 올바르게 감지
+  const y = new Date().getFullYear();
+  const jan = offsetAt(tz, new Date(y, 0, 15));
+  const jul = offsetAt(tz, new Date(y, 6, 15));
+  const now = offsetAt(tz, new Date());
+  const hasDST = jan !== jul;
+  return { offset: now, isDST: hasDST && now === Math.max(jan, jul) };
+}
+function icon(hourStr){
+  const h = parseInt(hourStr, 10);
+  if (h >= 6 && h < 9)  return '🌅';
+  if (h >= 9 && h < 18) return '☀️';
+  if (h >= 18 && h < 21) return '🌆';
+  return '🌙';
+}
+function fmtHours(min){
+  const h = Math.floor(Math.abs(min) / 60), m = Math.abs(min) % 60;
+  return m ? `${h}시간 ${m}분` : `${h}시간`;
+}
+function renderClock(side, tz){
+  const p = tzParts(tz);
+  document.getElementById('time-'+side).innerHTML = `${p.hour}:${p.minute}<small> ${p.second}</small>`;
+  document.getElementById('date-'+side).textContent = `${p.year} ${p.month} ${p.day} ${p.weekday}`;
+  document.getElementById('icon-'+side).textContent = icon(p.hour);
+  const d = dstInfo(tz);
+  document.getElementById('dst-'+side).hidden = !d.isDST;
+  return d.offset;
+}
+function tick(){
+  const offA = renderClock('a', tzA);
+  const offB = renderClock('b', tzB);
+  const diff = offA - offB;
+  const nameA = cityName(tzA), nameB = cityName(tzB);
+  document.getElementById('diff-line').innerHTML =
+    diff === 0
+      ? `${nameA}와 ${nameB}는 지금 <b>같은 시간</b>이에요`
+      : `지금 ${nameB}은(는) ${nameA}보다 <b>${fmtHours(diff)}</b> ${diff > 0 ? '느려요' : '빨라요'}`;
+}
+// 초기 렌더는 스크립트 맨 아래에서 실행 (달력 변수 초기화 이후)
+
+/* ── 저장소 (localStorage ↔ Firebase 자동 전환) ──── */
+const LS_KEY = 'our-time-stamps-v1';
+let stamps = {};          // { 'YYYY-MM-DD': {img, note, ts} }
+let db = null;
+
+function loadLocal(){ try{ stamps = JSON.parse(localStorage.getItem(LS_KEY)) || {}; }catch(e){ stamps = {}; } }
+function saveLocalAll(){ localStorage.setItem(LS_KEY, JSON.stringify(stamps)); }
+
+async function initStore(){
+  loadLocal();
+  if (!firebaseConfig){ renderCalendar(); return; }
+  try{
+    const appMod = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js');
+    const fsMod  = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js');
+    const app = appMod.initializeApp(firebaseConfig);
+    db = { fs: fsMod, ref: fsMod.collection(fsMod.getFirestore(app), 'couples', COUPLE_ID, 'stamps') };
+    fsMod.onSnapshot(db.ref, snap => {
+      stamps = {};
+      snap.forEach(d => stamps[d.id] = d.data());
+      renderCalendar();
+    });
+    const el = document.getElementById('sync-state');
+    el.textContent = '두 사람 실시간 동기화 중 ✓';
+    el.classList.add('on');
+  }catch(e){
+    console.error('Firebase 연결 실패, 로컬 저장으로 동작합니다.', e);
+    renderCalendar();
+  }
+}
+async function putStamp(key, data){
+  stamps[key] = data;
+  if (db){ await db.fs.setDoc(db.fs.doc(db.ref, key), data); }
+  else saveLocalAll();
+  renderCalendar();
+}
+async function removeStamp(key){
+  delete stamps[key];
+  if (db){ await db.fs.deleteDoc(db.fs.doc(db.ref, key)); }
+  else saveLocalAll();
+  renderCalendar();
+}
+
+/* ── 달력: 일 / 주 / 월 보기 (첫 번째 시계의 시간대 기준) ── */
+const MODE_KEY = 'our-time-view-v1';
+let mode = localStorage.getItem(MODE_KEY) || 'month';   // 'day' | 'week' | 'month'
+let anchor = new Date();                                 // 지금 보고 있는 기준 날짜
+const grid = document.getElementById('grid');
+const weekdaysRow = document.getElementById('weekdays');
+const rangeLabel = document.getElementById('range-label');
+const yearSel = document.getElementById('year-sel');
+const monthSel = document.getElementById('month-sel');
+
+const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+function dateKey(y, m, d){ return `${y}-${pad(m+1)}-${pad(d)}`; }
+const keyOf = d => dateKey(d.getFullYear(), d.getMonth(), d.getDate());
+function todayKey(){
+  const p = Object.fromEntries(fmt(tzA,{year:'numeric',month:'2-digit',day:'2-digit'})
+    .formatToParts(new Date()).map(x=>[x.type,x.value]));
+  return `${p.year}-${p.month}-${p.day}`;
+}
+
+/* 연도·월 선택 채우기 */
+{
+  const yNow = new Date().getFullYear();
+  for (let y = yNow - 5; y <= yNow + 10; y++) yearSel.appendChild(new Option(`${y}년`, y));
+  for (let m = 0; m < 12; m++) monthSel.appendChild(new Option(`${m+1}월`, m));
+}
+function syncPickers(){
+  yearSel.value = anchor.getFullYear();
+  monthSel.value = anchor.getMonth();
+}
+function setYM(y, m){
+  const last = new Date(y, m+1, 0).getDate();
+  anchor = new Date(y, m, Math.min(anchor.getDate(), last));
+  renderCalendar();
+}
+yearSel.addEventListener('change', () => setYM(+yearSel.value, anchor.getMonth()));
+monthSel.addEventListener('change', () => setYM(anchor.getFullYear(), +monthSel.value));
+
+/* 보기 전환 */
+document.querySelectorAll('.seg button').forEach(b => {
+  b.addEventListener('click', () => {
+    mode = b.dataset.mode;
+    localStorage.setItem(MODE_KEY, mode);
+    renderCalendar();
+  });
+});
+
+/* 공용 날짜 셀 */
+function cellFor(d, {tall=false} = {}){
+  const key = keyOf(d);
+  const cell = document.createElement('button');
+  cell.className = 'day';
+  if (d.getDay() === 0) cell.classList.add('sun');
+  if (key === todayKey()) cell.classList.add('today');
+  cell.setAttribute('aria-label', `${d.getMonth()+1}월 ${d.getDate()}일`);
+  const s = stamps[key];
+  let inner = `<span class="num">${d.getDate()}</span>`;
+  if (s?.img) inner += `<span class="mini-stamp"><img src="${s.img}" alt=""></span>`;
+  if (tall && s?.note) inner += `<span class="mini-note">${esc(s.note)}</span>`;
+  if (!tall && s?.note && !s?.img) inner += `<span class="dot-note"></span>`;
+  cell.innerHTML = inner;
+  cell.addEventListener('click', () => openDay(key, d.getFullYear(), d.getMonth(), d.getDate()));
+  return cell;
+}
+
+function renderMonth(){
+  rangeLabel.textContent = '';
+  const y = anchor.getFullYear(), m = anchor.getMonth();
+  const first = new Date(y, m, 1).getDay();
+  const days  = new Date(y, m+1, 0).getDate();
+  for (let i=0; i<first; i++){
+    const b = document.createElement('div'); b.className='day blank'; grid.appendChild(b);
+  }
+  for (let d=1; d<=days; d++) grid.appendChild(cellFor(new Date(y, m, d)));
+}
+function renderWeek(){
+  const start = new Date(anchor);
+  start.setDate(anchor.getDate() - anchor.getDay());   // 일요일 시작
+  const end = new Date(start); end.setDate(start.getDate() + 6);
+  const f = d => `${d.getMonth()+1}월 ${d.getDate()}일`;
+  rangeLabel.textContent = `${f(start)} — ${f(end)}`;
+  for (let i=0; i<7; i++){
+    const d = new Date(start); d.setDate(start.getDate() + i);
+    grid.appendChild(cellFor(d, {tall:true}));
+  }
+}
+function renderDay(){
+  const d = anchor, key = keyOf(d);
+  rangeLabel.textContent = new Intl.DateTimeFormat('ko-KR',
+    {year:'numeric', month:'long', day:'numeric', weekday:'long'}).format(d);
+  const s = stamps[key];
+  const card = document.createElement('button');
+  card.className = 'day-single';
+  card.setAttribute('aria-label', '이 날 편집하기');
+  let inner = s?.img
+    ? `<div class="big-stamp"><img src="${s.img}" alt="이 날의 사진">
+         <div class="postmark"><span>PAR AVION</span><b>${pad(d.getMonth()+1)}.${pad(d.getDate())}</b></div></div>`
+    : `<div class="empty-stamp" style="max-width:280px;margin:0 auto">아직 스탬프가 없는 날이에요</div>`;
+  inner += s?.note
+    ? `<p class="ds-note">${esc(s.note)}</p>`
+    : `<p class="ds-empty">탭해서 사진이나 한 줄을 남겨보세요</p>`;
+  card.innerHTML = inner;
+  card.addEventListener('click', () => openDay(key, d.getFullYear(), d.getMonth(), d.getDate()));
+  grid.appendChild(card);
+}
+
+function renderCalendar(){
+  syncPickers();
+  document.querySelectorAll('.seg button')
+    .forEach(b => b.classList.toggle('on', b.dataset.mode === mode));
+  weekdaysRow.style.display = (mode === 'day') ? 'none' : 'grid';
+  grid.className = 'grid' + (mode === 'week' ? ' week' : mode === 'day' ? ' single' : '');
+  grid.innerHTML = '';
+  if (mode === 'month') renderMonth();
+  else if (mode === 'week') renderWeek();
+  else renderDay();
+}
+
+/* 이전/다음: 보기 방식에 맞게 이동 */
+function shift(dir){
+  if (mode === 'month') anchor.setMonth(anchor.getMonth() + dir);
+  else if (mode === 'week') anchor.setDate(anchor.getDate() + 7*dir);
+  else anchor.setDate(anchor.getDate() + dir);
+  renderCalendar();
+}
+document.getElementById('prev').onclick = () => shift(-1);
+document.getElementById('next').onclick = () => shift(1);
+document.getElementById('today-btn').onclick = () => { anchor = new Date(); renderCalendar(); };
+
+/* ── 날짜 모달 ────────────────────────────────────── */
+const modal = document.getElementById('day-modal');
+const stampArea = document.getElementById('stamp-area');
+const noteInput = document.getElementById('note-input');
+const fileInput = document.getElementById('file-input');
+let curKey = null, pendingImg = null;
+
+function openDay(key, y, m, d){
+  curKey = key; pendingImg = null;
+  const s = stamps[key] || {};
+  document.getElementById('modal-title').textContent = `${y}년 ${m+1}월 ${d}일`;
+  noteInput.value = s.note || '';
+  document.getElementById('delete-btn').hidden = !s.img && !s.note;
+  drawStampArea(s.img, `${pad(m+1)}.${pad(d)}`);
+  fileInput.value = '';
+  modal.showModal();
+}
+function drawStampArea(img, dateLabel){
+  stampArea.innerHTML = img
+    ? `<div class="big-stamp"><img src="${img}" alt="이 날의 사진">
+         <div class="postmark"><span>PAR AVION</span><b>${dateLabel}</b></div></div>`
+    : `<div class="empty-stamp">아직 스탬프가 없어요.<br>사진을 붙여 하루를 남겨보세요.</div>`;
+}
+fileInput.addEventListener('change', () => {
+  const f = fileInput.files[0];
+  if (!f) return;
+  const img = new Image();
+  img.onload = () => {
+    // 클라이언트에서 480px 정사각으로 압축 → 저장 용량 절약
+    const S = 480, c = document.createElement('canvas');
+    c.width = c.height = S;
+    const ctx = c.getContext('2d');
+    const r = Math.max(S/img.width, S/img.height);
+    const w = img.width*r, h = img.height*r;
+    ctx.drawImage(img, (S-w)/2, (S-h)/2, w, h);
+    pendingImg = c.toDataURL('image/jpeg', 0.82);
+    const [y,mo,d] = curKey.split('-');
+    drawStampArea(pendingImg, `${mo}.${d}`);
+    URL.revokeObjectURL(img.src);
+  };
+  img.src = URL.createObjectURL(f);
+});
+document.getElementById('save-btn').onclick = async () => {
+  const prev = stamps[curKey] || {};
+  const data = {
+    img: pendingImg ?? prev.img ?? null,
+    note: noteInput.value.trim(),
+    ts: Date.now()
+  };
+  if (!data.img && !data.note){ modal.close(); return; }
+  await putStamp(curKey, data);
+  modal.close();
+};
+document.getElementById('delete-btn').onclick = async () => {
+  await removeStamp(curKey); modal.close();
+};
+document.getElementById('close-btn').onclick = () => modal.close();
+modal.addEventListener('click', e => { if (e.target === modal) modal.close(); });
+
+onTzChange();            // 라벨 + 시계 + 달력 첫 렌더
+setInterval(tick, 1000);
+initStore();             // 저장된 스탬프 불러와 다시 그림
+</script>
+</body>
+</html>
