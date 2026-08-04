@@ -216,6 +216,56 @@ header h1{
 }
 .day-single .ds-empty{color:var(--faint);font-size:14px;margin-top:8px}
 
+/* ── 잠금 화면 (봉인된 편지) ───────────────────────── */
+#lock{
+  position:fixed;inset:0;z-index:99;
+  background:var(--paper);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:24px;text-align:center;
+}
+#lock .seal{
+  width:92px;height:92px;border-radius:50%;
+  border:2.5px dashed var(--red);color:var(--red);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.08em;
+  transform:rotate(-8deg);margin-bottom:22px;
+}
+#lock .seal b{font-size:20px;letter-spacing:0}
+#lock h2{font-family:'Gowun Batang',serif;font-size:24px;font-weight:700}
+#lock p{color:var(--faint);font-size:14px;margin-top:8px}
+#lock form{display:flex;gap:8px;margin-top:22px;width:min(320px,86vw)}
+#lock input{
+  flex:1;padding:11px 14px;border:1px solid var(--line);border-radius:6px;
+  background:var(--stamp);font-family:inherit;font-size:15px;color:var(--ink);
+}
+#lock input:focus{outline:2px solid var(--blue);outline-offset:1px}
+#lock button{
+  padding:11px 18px;border-radius:6px;border:1px solid var(--red);
+  background:var(--red);color:#fff;font-family:inherit;font-size:14px;
+  font-weight:600;cursor:pointer;
+}
+#lock .err{color:var(--red);font-size:13px;margin-top:12px;min-height:18px}
+.bio-btn{
+  margin-top:22px;padding:13px 30px;border-radius:8px;
+  border:1px solid var(--ink);background:var(--ink);color:#fff;
+  font-family:inherit;font-size:15px;font-weight:600;cursor:pointer;
+}
+.bio-btn:hover{filter:brightness(1.15)}
+.bio-btn.small{margin-top:0;padding:10px 18px;font-size:14px}
+.bio-btn:focus-visible,.linkish:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.linkish{
+  margin-top:14px;border:none;background:none;cursor:pointer;
+  color:var(--faint);font-family:inherit;font-size:13.5px;
+  text-decoration:underline dotted;
+}
+.linkish:hover{color:var(--ink)}
+#bio-offer{margin-top:22px}
+.offer-row{display:flex;gap:14px;align-items:center;justify-content:center;margin-top:14px}
+#lock form[hidden],#bio-offer[hidden],.bio-btn[hidden],.linkish[hidden]{display:none}
+#lock.shake form{animation:shake .3s}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+#lock[hidden]{display:none}
+
 /* ── modal ─────────────────────────────────────────── */
 dialog{
   border:none;border-radius:8px;padding:0;
@@ -281,6 +331,41 @@ footer{
 </style>
 </head>
 <body>
+
+<!-- 잠금 화면 -->
+<div id="lock">
+  <div class="seal" aria-hidden="true"><b>✉</b><span>SEALED</span></div>
+  <h2 id="lock-title">봉인된 편지예요</h2>
+  <p id="lock-sub">초대받은 사람만 열 수 있어요</p>
+
+  <!-- 등록된 기기: Face ID로 열기 -->
+  <button type="button" class="bio-btn" id="bio-btn" hidden>Face ID로 열기</button>
+
+  <!-- 초대 링크로 처음 온 사람 -->
+  <div id="invite-view" hidden>
+    <button type="button" class="bio-btn" id="invite-bio">Face ID 설정하고 들어가기</button>
+    <br>
+    <button type="button" class="linkish" id="invite-plain">이 기기 기억하고 그냥 들어가기</button>
+  </div>
+
+  <!-- 관리자(암호) 폼 -->
+  <form id="lock-form" hidden>
+    <input type="password" id="lock-input" placeholder="관리자 암호" autocomplete="current-password" aria-label="관리자 암호 입력">
+    <button type="submit">열기</button>
+  </form>
+
+  <button type="button" class="linkish" id="pw-toggle">관리자로 열기</button>
+
+  <!-- 관리자 암호 입장 후 Face ID 제안 -->
+  <div id="bio-offer" hidden>
+    <p style="color:var(--ink);font-size:15px">다음부터 Face ID로 더 편하게 열까요?</p>
+    <div class="offer-row">
+      <button type="button" class="linkish" id="bio-no">다음에</button>
+      <button type="button" class="bio-btn small" id="bio-yes">Face ID 설정</button>
+    </div>
+  </div>
+  <div class="err" id="lock-err"></div>
+</div>
 
 <div class="airmail" aria-hidden="true"></div>
 
@@ -366,6 +451,166 @@ footer{
 </dialog>
 
 <script>
+/* ═══════════════════════════════════════════════════════════
+   ⓪ 잠금: 초대 링크 + Face ID + 관리자 암호
+
+   구조
+   - 초대 링크( .../time/#invite=초대코드 )로 처음 접속한 사람만
+     Face ID를 등록하고 들어올 수 있어요.
+   - 등록된 기기는 이후 열 때마다 Face ID로 인증.
+   - 관리자(현진)는 "관리자로 열기" → 관리자 암호로 언제든 입장.
+
+   관리 방법 (페이지에서 F12 → 콘솔)
+   - 관리자 암호 바꾸기:  await hashPass('새암호')   → PASS_HASH에 붙여넣기
+   - 초대코드 만들기/바꾸기: await hashPass('새초대코드') → INVITE_HASH에 붙여넣기
+     초대 링크: https://chojinie.github.io/time/#invite=새초대코드
+   - 초대 무효화: INVITE_HASH를 새 값으로 바꿔 push (등록된 기기는 유지됨)
+   ═══════════════════════════════════════════════════════════ */
+const PASS_HASH   = '38793612edb7164d93a8c8eb741ad8ea5d77bb9e8373e33d541776214785a1fa'; // 관리자 암호 해시
+const INVITE_HASH = '280d44ab1e9f79b5cce2dd4f58f5fe91f0fbacdac9f7447dffc318ceb79f2d02'; // 초대코드 해시
+const UNLOCK_KEY = 'our-time-unlock-v1';   // 이 기기 기억 (암호/초대 수락)
+const CRED_KEY   = 'our-time-cred-v1';     // Face ID 패스키 ID
+const SESS_KEY   = 'our-time-sess-v1';     // 이번 방문 동안 열림 유지
+
+async function sha256(s){
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
+  return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2,'0')).join('');
+}
+window.hashPass = async p => { const h = await sha256(p); console.log('해시 →', h); return h; };
+
+const b64 = buf => btoa(String.fromCharCode(...new Uint8Array(buf)));
+const unb64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+const rand = n => crypto.getRandomValues(new Uint8Array(n));
+
+const lockEl   = document.getElementById('lock');
+const lockErr  = document.getElementById('lock-err');
+const lockForm = document.getElementById('lock-form');
+const bioBtn   = document.getElementById('bio-btn');
+const pwToggle = document.getElementById('pw-toggle');
+const bioOffer = document.getElementById('bio-offer');
+const inviteView = document.getElementById('invite-view');
+const credId = localStorage.getItem(CRED_KEY);
+
+function unlock(){
+  sessionStorage.setItem(SESS_KEY, '1');
+  lockEl.hidden = true;
+}
+async function bioAvailable(){
+  try{
+    return window.PublicKeyCredential &&
+      await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
+  }catch(e){ return false; }
+}
+async function registerFaceID(){
+  const cred = await navigator.credentials.create({ publicKey: {
+    challenge: rand(32),
+    rp: { name: '우리의 시간', id: location.hostname },
+    user: { id: rand(16), name: 'our-time', displayName: '우리의 시간' },
+    pubKeyCredParams: [{type:'public-key', alg:-7}, {type:'public-key', alg:-257}],
+    authenticatorSelection: { authenticatorAttachment:'platform', userVerification:'required', residentKey:'preferred' },
+    timeout: 60000
+  }});
+  localStorage.setItem(CRED_KEY, b64(cred.rawId));
+  localStorage.removeItem(UNLOCK_KEY);
+}
+
+/* 초기 상태 결정 */
+(async () => {
+  if (sessionStorage.getItem(SESS_KEY)){ lockEl.hidden = true; return; }
+
+  const params = new URLSearchParams(location.hash.slice(1));
+  const token = params.get('invite');
+  if (token){
+    history.replaceState(null, '', location.pathname); // 주소창에서 초대코드 제거
+    if (await sha256(token) === INVITE_HASH){
+      document.getElementById('lock-title').textContent = '초대장이 도착했어요';
+      document.getElementById('lock-sub').textContent = '환영해요! 이 기기를 등록해주세요';
+      if (await bioAvailable()){
+        inviteView.hidden = false;
+      } else {
+        // Face ID 미지원 기기 → 기기 기억 방식으로
+        localStorage.setItem(UNLOCK_KEY, INVITE_HASH);
+        unlock();
+      }
+      return;
+    }
+    lockErr.textContent = '유효하지 않은 초대예요';
+  }
+
+  if (credId){
+    document.getElementById('lock-sub').textContent = '얼굴 인식으로 편지를 열어보세요';
+    bioBtn.hidden = false;
+  } else if (localStorage.getItem(UNLOCK_KEY) === PASS_HASH ||
+             localStorage.getItem(UNLOCK_KEY) === INVITE_HASH){
+    lockEl.hidden = true;   // 이미 이 기기를 기억 중
+  }
+  // 그 외: 닫힌 화면 (초대 필요 안내 + 관리자로 열기만 표시)
+})();
+
+/* 초대 수락 */
+document.getElementById('invite-bio').addEventListener('click', async () => {
+  lockErr.textContent = '';
+  try{ await registerFaceID(); unlock(); }
+  catch(e){ lockErr.textContent = 'Face ID 설정이 취소됐어요. 다시 시도하거나 아래 버튼으로 들어와요.'; }
+});
+document.getElementById('invite-plain').addEventListener('click', () => {
+  localStorage.setItem(UNLOCK_KEY, INVITE_HASH);
+  unlock();
+});
+
+/* Face ID로 열기 (등록된 기기) */
+bioBtn.addEventListener('click', async () => {
+  lockErr.textContent = '';
+  try{
+    await navigator.credentials.get({ publicKey: {
+      challenge: rand(32),
+      allowCredentials: [{ type:'public-key', id: unb64(credId), transports:['internal'] }],
+      userVerification: 'required', timeout: 60000
+    }});
+    unlock();
+  }catch(e){
+    lockErr.textContent = '인식에 실패했어요. 다시 시도하거나 관리자 암호로 열어주세요.';
+  }
+});
+
+/* 관리자 폼 토글 */
+pwToggle.addEventListener('click', () => {
+  lockForm.hidden = !lockForm.hidden;
+  if (!lockForm.hidden) document.getElementById('lock-input').focus();
+});
+
+/* 관리자 암호로 열기 */
+lockForm.addEventListener('submit', async e => {
+  e.preventDefault();
+  const v = document.getElementById('lock-input').value;
+  if (await sha256(v) === PASS_HASH){
+    lockErr.textContent = '';
+    if (!localStorage.getItem(CRED_KEY) && await bioAvailable()){
+      lockForm.hidden = true; bioBtn.hidden = true; pwToggle.hidden = true;
+      inviteView.hidden = true;
+      bioOffer.hidden = false;
+    } else {
+      localStorage.setItem(UNLOCK_KEY, PASS_HASH);
+      unlock();
+    }
+  } else {
+    lockErr.textContent = '암호가 맞지 않아요';
+    lockEl.classList.remove('shake'); void lockEl.offsetWidth;
+    lockEl.classList.add('shake');
+    document.getElementById('lock-input').select();
+  }
+});
+
+/* 관리자 입장 후 Face ID 제안 */
+document.getElementById('bio-yes').addEventListener('click', async () => {
+  try{ await registerFaceID(); unlock(); }
+  catch(e){ localStorage.setItem(UNLOCK_KEY, PASS_HASH); unlock(); }
+});
+document.getElementById('bio-no').addEventListener('click', () => {
+  localStorage.setItem(UNLOCK_KEY, PASS_HASH);
+  unlock();
+});
+
 /* ═══════════════════════════════════════════════════════════
    ① Firebase 연동 (선택사항 — 비워두면 이 기기에만 저장됩니다)
 
