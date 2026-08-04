@@ -103,6 +103,7 @@ header h1{
   font-size:11px;font-weight:600;letter-spacing:.05em;
   background:var(--blue);color:#fff;
 }
+.badge[hidden]{display:none}
 .diff{
   text-align:center;margin:16px 0 40px;font-size:14.5px;color:var(--ink);
 }
@@ -271,6 +272,23 @@ header h1{
 @keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
 #lock[hidden]{display:none}
 
+/* ── 로그인 게이트 ─────────────────────────────────── */
+#auth-gate{
+  position:fixed;inset:0;z-index:60;
+  background:rgba(245,242,234,.94);
+  display:flex;align-items:center;justify-content:center;padding:24px;
+}
+#auth-gate[hidden]{display:none}
+.gate-card{
+  background:var(--stamp);border:1px solid var(--line);border-radius:8px;
+  padding:30px 28px;text-align:center;width:min(360px,90vw);
+  box-shadow:0 14px 50px rgba(34,48,62,.18);
+}
+.gate-card h3{font-family:'Gowun Batang',serif;font-size:20px;font-weight:700}
+.gate-card p{color:var(--faint);font-size:14px;margin-top:8px;line-height:1.6}
+.gate-card .bio-btn{margin-top:18px;width:100%}
+.gate-card .err{color:var(--red);font-size:13px;margin-top:10px;min-height:16px}
+
 /* ── modal ─────────────────────────────────────────── */
 dialog{
   border:none;border-radius:8px;padding:0;
@@ -394,6 +412,17 @@ footer{
   <div class="err" id="lock-err"></div>
 </div>
 
+<!-- 구글 로그인 게이트 (Firebase Auth) -->
+<div id="auth-gate" hidden>
+  <div class="gate-card">
+    <h3>계정 확인이 필요해요</h3>
+    <p>두 사람의 구글 계정만 읽고 쓸 수 있게 잠겨 있어요.</p>
+    <button type="button" class="bio-btn" id="auth-google">Google로 로그인</button>
+    <button type="button" class="linkish" id="auth-local">나중에 (이 기기에만 저장)</button>
+    <div class="err" id="auth-err"></div>
+  </div>
+</div>
+
 <div class="airmail" aria-hidden="true"></div>
 
 <div class="wrap">
@@ -504,8 +533,8 @@ footer{
      초대 링크: https://chojinie.github.io/time/#invite=새초대코드
    - 초대 무효화: INVITE_HASH를 새 값으로 바꿔 push (등록된 기기는 유지됨)
    ═══════════════════════════════════════════════════════════ */
-const PASS_HASH   = '38793612edb7164d93a8c8eb741ad8ea5d77bb9e8373e33d541776214785a1fa'; // 관리자 암호 해시
-const INVITE_HASH = '280d44ab1e9f79b5cce2dd4f58f5fe91f0fbacdac9f7447dffc318ceb79f2d02'; // 초대코드 해시
+const PASS_HASH   = '50a092f199ffc80b2b254c88c53f8cfbe7b022118867d0c3db63df75c501319a'; // 관리자 암호 해시
+const INVITE_HASH = '36757032e753a2902fd1449fcb8e854d0210ba2456787752cee47335e97027de'; // 초대코드 해시
 const UNLOCK_KEY = 'our-time-unlock-v1';   // 이 기기 기억 (암호/초대 수락)
 const CRED_KEY   = 'our-time-cred-v1';     // Face ID 패스키 ID
 const SESS_KEY   = 'our-time-sess-v1';     // 이번 방문 동안 열림 유지
@@ -659,19 +688,22 @@ document.getElementById('bio-no').addEventListener('click', () => {
    4. 저장 후 git push — 두 사람 모두 같은 주소로 접속하면 자동 동기화
    ═══════════════════════════════════════════════════════════ */
 const firebaseConfig = {
-  apiKey: "AIzaSyBLIWwplKJt8G0UfwP_ar7wGywtaF4Qk1I",
-  authDomain: "our-time-51cdf.firebaseapp.com",
-  projectId: "our-time-51cdf",
-  storageBucket: "our-time-51cdf.firebasestorage.app",
-  messagingSenderId: "1012737345469",
-  appId: "1:1012737345469:web:394b52671b5d65548cf4d4"
+    apiKey: "AIzaSyBLIWwplKJt8G0UfwP_ar7wGywtaF4Qk1I",
+    authDomain: "our-time-51cdf.firebaseapp.com",
+    projectId: "our-time-51cdf",
+    storageBucket: "our-time-51cdf.firebasestorage.app",
+    messagingSenderId: "1012737345469",
+    appId: "1:1012737345469:web:394b52671b5d65548cf4d4"
 };
-const COUPLE_ID = "our-time"; // 우리 둘만의 방 이름 (원하는 문자열로)
+  
+const COUPLE_ID = "our-room"; // 우리 둘만의 방 이름 (원하는 문자열로)
 
 /* ── 도시 목록 ─────────────────────────────────────
-   자주 가는 곳: 한글 이름 + 소인 코드. 그 외 전 세계 타임존 전체 선택 가능 */
+   자주 가는 곳: 한글 이름 + 소인 코드. 그 외 전 세계 타임존 전체 선택 가능.
+   같은 시간대의 다른 도시는 '시간대#코드' 형식으로 추가 (예: 버밍엄) */
 const CITIES = [
   ['Asia/Seoul','서울','SEL'],
+  ['Europe/London#BHX','버밍엄','BHX'],
   ['Europe/London','런던','LDN'],
   ['America/Los_Angeles','로스앤젤레스','LAX'],
   ['America/Vancouver','밴쿠버','YVR'],
@@ -689,11 +721,12 @@ const CITIES = [
   ['Asia/Dubai','두바이','DXB'],
   ['Australia/Sydney','시드니','SYD'],
 ];
-const cityName = tz => (CITIES.find(c => c[0] === tz)?.[1]) || tz.split('/').pop().replaceAll('_',' ');
-const cityCode = tz => (CITIES.find(c => c[0] === tz)?.[2]) || tz.split('/').pop().replaceAll('_','').slice(0,3).toUpperCase();
+const tzOf = v => v.split('#')[0];   // 선택값 → 실제 시간대
+const cityName = v => (CITIES.find(c => c[0] === v)?.[1]) || tzOf(v).split('/').pop().replaceAll('_',' ');
+const cityCode = v => (CITIES.find(c => c[0] === v)?.[2]) || tzOf(v).split('/').pop().replaceAll('_','').slice(0,3).toUpperCase();
 
 const TZ_KEY = 'our-time-tz-v1';
-let tzA = 'Asia/Seoul', tzB = 'Europe/London';
+let tzA = 'Asia/Seoul', tzB = 'Europe/London#BHX';
 try{
   const saved = JSON.parse(localStorage.getItem(TZ_KEY));
   if (saved?.a) tzA = saved.a;
@@ -766,7 +799,8 @@ function fmtHours(min){
   const h = Math.floor(Math.abs(min) / 60), m = Math.abs(min) % 60;
   return m ? `${h}시간 ${m}분` : `${h}시간`;
 }
-function renderClock(side, tz){
+function renderClock(side, v){
+  const tz = tzOf(v);
   const p = tzParts(tz);
   document.getElementById('time-'+side).innerHTML = `${p.hour}:${p.minute}<small> ${p.second}</small>`;
   document.getElementById('date-'+side).textContent = `${p.year} ${p.month} ${p.day} ${p.weekday}`;
@@ -806,26 +840,65 @@ const slotHas = sl => !!(sl && (sl.img || (sl.note && sl.note.trim())));
 function loadLocal(){ try{ stamps = JSON.parse(localStorage.getItem(LS_KEY)) || {}; }catch(e){ stamps = {}; } }
 function saveLocalAll(){ localStorage.setItem(LS_KEY, JSON.stringify(stamps)); }
 
+/* 구글 로그인으로 데이터 잠금 (Firestore 보안 규칙과 세트) */
+const REQUIRE_LOGIN = true;
+
 async function initStore(){
-  loadLocal();
-  if (!firebaseConfig){ renderCalendar(); return; }
+  loadLocal(); renderCalendar();
+  if (!firebaseConfig) return;
   try{
     const appMod = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js');
     const fsMod  = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js');
     const app = appMod.initializeApp(firebaseConfig);
-    db = { fs: fsMod, ref: fsMod.collection(fsMod.getFirestore(app), 'couples', COUPLE_ID, 'stamps') };
-    fsMod.onSnapshot(db.ref, snap => {
-      stamps = {};
-      snap.forEach(d => stamps[d.id] = d.data());
-      renderCalendar();
+    const ref = fsMod.collection(fsMod.getFirestore(app), 'couples', COUPLE_ID, 'stamps');
+
+    const attach = (email) => {
+      if (db) return;
+      db = { fs: fsMod, ref };
+      fsMod.onSnapshot(ref,
+        snap => { stamps = {}; snap.forEach(d => stamps[d.id] = d.data()); renderCalendar(); },
+        err => { setSync('이 계정은 접근 권한이 없어요', false); console.error(err); });
+      setSync('두 사람 실시간 동기화 중 ✓', true);
+    };
+
+    if (!REQUIRE_LOGIN){ attach(); return; }
+
+    const authMod = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js');
+    const auth = authMod.getAuth(app);
+    const gate = document.getElementById('auth-gate');
+
+    document.getElementById('auth-google').addEventListener('click', async () => {
+      document.getElementById('auth-err').textContent = '';
+      try{
+        await authMod.signInWithPopup(auth, new authMod.GoogleAuthProvider());
+      }catch(e){
+        document.getElementById('auth-err').textContent = '로그인이 취소되었거나 실패했어요. 다시 시도해주세요.';
+        console.error(e);
+      }
     });
-    const el = document.getElementById('sync-state');
-    el.textContent = '두 사람 실시간 동기화 중 ✓';
-    el.classList.add('on');
+    document.getElementById('auth-local').addEventListener('click', () => {
+      sessionStorage.setItem('our-time-authskip', '1');
+      gate.hidden = true;
+      setSync('이 기기에만 저장 중 (로그인 안 함)', false);
+    });
+    authMod.onAuthStateChanged(auth, user => {
+      if (user){
+        gate.hidden = true;
+        attach(user.email);
+      } else if (!sessionStorage.getItem('our-time-authskip')){
+        setSync('구글 로그인 대기 중', false);
+        gate.hidden = false;
+      }
+    });
   }catch(e){
     console.error('Firebase 연결 실패, 로컬 저장으로 동작합니다.', e);
     renderCalendar();
   }
+}
+function setSync(text, on){
+  const el = document.getElementById('sync-state');
+  el.textContent = text;
+  el.classList.toggle('on', !!on);
 }
 async function putStamp(key, data){
   stamps[key] = data;
@@ -854,7 +927,7 @@ const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>
 function dateKey(y, m, d){ return `${y}-${pad(m+1)}-${pad(d)}`; }
 const keyOf = d => dateKey(d.getFullYear(), d.getMonth(), d.getDate());
 function todayKey(){
-  const p = Object.fromEntries(fmt(tzA,{year:'numeric',month:'2-digit',day:'2-digit'})
+  const p = Object.fromEntries(fmt(tzOf(tzA),{year:'numeric',month:'2-digit',day:'2-digit'})
     .formatToParts(new Date()).map(x=>[x.type,x.value]));
   return `${p.year}-${p.month}-${p.day}`;
 }
