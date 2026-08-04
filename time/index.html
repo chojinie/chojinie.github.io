@@ -188,6 +188,11 @@ header h1{
   box-shadow:0 1px 3px rgba(34,48,62,.18);
 }
 .mini-stamp img{width:100%;height:100%;object-fit:cover;display:block}
+/* 두 장이 있는 날: 우표 두 장을 살짝 겹쳐서 */
+.stamp-pair{margin-top:2px;display:flex;justify-content:center;width:100%}
+.stamp-pair .mini-stamp{width:52%;max-width:46px;margin-top:0}
+.stamp-pair .mini-stamp:first-child{transform:rotate(-5deg);z-index:1}
+.stamp-pair .mini-stamp:last-child{transform:rotate(5deg);margin-left:-10%}
 .day .dot-note{
   position:absolute;bottom:5px;width:5px;height:5px;border-radius:50%;
   background:var(--blue);
@@ -304,6 +309,28 @@ dialog::backdrop{background:rgba(34,48,62,.45)}
   padding:34px 10px;text-align:center;color:var(--faint);font-size:13.5px;
   margin-bottom:6px;
 }
+.empty-stamp.small{padding:26px 8px;font-size:12.5px}
+/* 두 사람 슬롯 (모달) */
+.slots{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:4px}
+.slot-name{
+  font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.08em;
+  margin-bottom:8px;text-align:center;
+}
+.slot[data-slot=a] .slot-name{color:var(--red)}
+.slot[data-slot=b] .slot-name{color:var(--blue)}
+.slot .big-stamp{width:100%;margin:0 0 8px;padding:6px}
+.slot .btn{width:100%;font-size:13px;padding:8px 6px}
+.slot textarea{
+  width:100%;margin-top:8px;padding:8px 10px;
+  border:1px solid var(--line);border-radius:6px;background:#fff;
+  font-family:inherit;font-size:13px;resize:vertical;min-height:52px;color:var(--ink);
+}
+.slot textarea:focus{outline:2px solid var(--blue);outline-offset:1px}
+/* 두 사람 슬롯 (하루 보기) */
+.ds-pair{display:grid;grid-template-columns:1fr 1fr;gap:18px;max-width:560px;margin:0 auto}
+@media(max-width:560px){.ds-pair{grid-template-columns:1fr;max-width:300px}}
+.ds-slot .big-stamp{width:min(220px,88%)}
+.ds-slot .ds-note{margin-top:12px;font-size:14px}
 .modal-body textarea{
   width:100%;margin-top:12px;padding:10px 12px;
   border:1px solid var(--line);border-radius:6px;background:#fff;
@@ -438,12 +465,23 @@ footer{
   <div class="modal-airmail" aria-hidden="true"></div>
   <div class="modal-body">
     <h3 id="modal-title"></h3>
-    <div id="stamp-area"></div>
-    <label class="btn ghost" for="file-input" style="display:block;text-align:center" id="upload-label">사진 붙이기</label>
+    <div class="slots">
+      <div class="slot" data-slot="a">
+        <div class="slot-name" id="name-a"></div>
+        <div id="stamp-a"></div>
+        <button type="button" class="btn ghost attach" data-slot="a">사진 붙이기</button>
+        <textarea id="note-a" placeholder="한 줄 남기기"></textarea>
+      </div>
+      <div class="slot" data-slot="b">
+        <div class="slot-name" id="name-b"></div>
+        <div id="stamp-b"></div>
+        <button type="button" class="btn ghost attach" data-slot="b">사진 붙이기</button>
+        <textarea id="note-b" placeholder="한 줄 남기기"></textarea>
+      </div>
+    </div>
     <input type="file" id="file-input" accept="image/*">
-    <textarea id="note-input" placeholder="이 날의 한 줄 (예: 오늘 저녁 9시에 통화하자!)"></textarea>
     <div class="btn-row">
-      <button class="btn danger" id="delete-btn" hidden>지우기</button>
+      <button class="btn danger" id="delete-btn" hidden>이 날 비우기</button>
       <button class="btn ghost" id="close-btn">닫기</button>
       <button class="btn primary" id="save-btn">스탬프 찍기</button>
     </div>
@@ -754,8 +792,19 @@ function tick(){
 
 /* ── 저장소 (localStorage ↔ Firebase 자동 전환) ──── */
 const LS_KEY = 'our-time-stamps-v1';
-let stamps = {};          // { 'YYYY-MM-DD': {img, note, ts} }
+let stamps = {};          // { 'YYYY-MM-DD': { a:{img,note}, b:{img,note}, ts } }
 let db = null;
+
+/* 두 사람 이름 — 원하는 이름으로 바꾸세요 (a: 빨간 소인, b: 파란 소인) */
+const NAMES = { a: '현진', b: '연인' };
+
+/* 예전 형식({img, note})으로 저장된 날은 첫 번째 칸으로 인식 */
+function norm(s){
+  if (!s) return null;
+  if ('a' in s || 'b' in s) return s;
+  return { a: { img: s.img || null, note: s.note || '' }, b: null, ts: s.ts };
+}
+const slotHas = sl => !!(sl && (sl.img || (sl.note && sl.note.trim())));
 
 function loadLocal(){ try{ stamps = JSON.parse(localStorage.getItem(LS_KEY)) || {}; }catch(e){ stamps = {}; } }
 function saveLocalAll(){ localStorage.setItem(LS_KEY, JSON.stringify(stamps)); }
@@ -848,11 +897,19 @@ function cellFor(d, {tall=false} = {}){
   if (d.getDay() === 0) cell.classList.add('sun');
   if (key === todayKey()) cell.classList.add('today');
   cell.setAttribute('aria-label', `${d.getMonth()+1}월 ${d.getDate()}일`);
-  const s = stamps[key];
+  const s = norm(stamps[key]);
+  const imgs = ['a','b'].map(k => s?.[k]?.img).filter(Boolean);
+  const notes = ['a','b'].map(k => s?.[k]?.note?.trim()).filter(Boolean);
   let inner = `<span class="num">${d.getDate()}</span>`;
-  if (s?.img) inner += `<span class="mini-stamp"><img src="${s.img}" alt=""></span>`;
-  if (tall && s?.note) inner += `<span class="mini-note">${esc(s.note)}</span>`;
-  if (!tall && s?.note && !s?.img) inner += `<span class="dot-note"></span>`;
+  if (imgs.length === 2){
+    inner += `<span class="stamp-pair">` +
+      imgs.map(im => `<span class="mini-stamp"><img src="${im}" alt=""></span>`).join('') +
+      `</span>`;
+  } else if (imgs.length === 1){
+    inner += `<span class="mini-stamp"><img src="${imgs[0]}" alt=""></span>`;
+  }
+  if (tall && notes.length) inner += `<span class="mini-note">${esc(notes.join(' / '))}</span>`;
+  if (!tall && notes.length && !imgs.length) inner += `<span class="dot-note"></span>`;
   cell.innerHTML = inner;
   cell.addEventListener('click', () => openDay(key, d.getFullYear(), d.getMonth(), d.getDate()));
   return cell;
@@ -883,18 +940,23 @@ function renderDay(){
   const d = anchor, key = keyOf(d);
   rangeLabel.textContent = new Intl.DateTimeFormat('ko-KR',
     {year:'numeric', month:'long', day:'numeric', weekday:'long'}).format(d);
-  const s = stamps[key];
+  const s = norm(stamps[key]);
+  const stampHtml = (sl) => sl?.img
+    ? `<div class="big-stamp"><img src="${sl.img}" alt="이 날의 사진">
+         <div class="postmark"><span>PAR AVION</span><b>${pad(d.getMonth()+1)}.${pad(d.getDate())}</b></div></div>`
+    : `<div class="empty-stamp small">아직 없어요</div>`;
   const card = document.createElement('button');
   card.className = 'day-single';
   card.setAttribute('aria-label', '이 날 편집하기');
-  let inner = s?.img
-    ? `<div class="big-stamp"><img src="${s.img}" alt="이 날의 사진">
-         <div class="postmark"><span>PAR AVION</span><b>${pad(d.getMonth()+1)}.${pad(d.getDate())}</b></div></div>`
-    : `<div class="empty-stamp" style="max-width:280px;margin:0 auto">아직 스탬프가 없는 날이에요</div>`;
-  inner += s?.note
-    ? `<p class="ds-note">${esc(s.note)}</p>`
-    : `<p class="ds-empty">탭해서 사진이나 한 줄을 남겨보세요</p>`;
-  card.innerHTML = inner;
+  card.innerHTML = `<div class="ds-pair">` +
+    ['a','b'].map(k => `
+      <div class="ds-slot">
+        <div class="slot-name" style="color:var(--${k==='a'?'red':'blue'})">${esc(NAMES[k])}</div>
+        ${stampHtml(s?.[k])}
+        ${s?.[k]?.note ? `<p class="ds-note">${esc(s[k].note)}</p>` : ''}
+      </div>`).join('') +
+    `</div>` +
+    (slotHas(s?.a) || slotHas(s?.b) ? '' : `<p class="ds-empty">탭해서 사진이나 한 줄을 남겨보세요</p>`);
   card.addEventListener('click', () => openDay(key, d.getFullYear(), d.getMonth(), d.getDate()));
   grid.appendChild(card);
 }
@@ -922,32 +984,46 @@ document.getElementById('prev').onclick = () => shift(-1);
 document.getElementById('next').onclick = () => shift(1);
 document.getElementById('today-btn').onclick = () => { anchor = new Date(); renderCalendar(); };
 
-/* ── 날짜 모달 ────────────────────────────────────── */
+/* ── 날짜 모달: 두 사람 슬롯 ──────────────────────── */
 const modal = document.getElementById('day-modal');
-const stampArea = document.getElementById('stamp-area');
-const noteInput = document.getElementById('note-input');
 const fileInput = document.getElementById('file-input');
-let curKey = null, pendingImg = null;
+let curKey = null, activeSlot = null;
+let pending = { a: undefined, b: undefined };   // undefined = 변경 없음
 
+document.getElementById('name-a').textContent = NAMES.a;
+document.getElementById('name-b').textContent = NAMES.b;
+
+function slotImg(k){
+  if (pending[k] !== undefined) return pending[k];
+  return norm(stamps[curKey])?.[k]?.img || null;
+}
+function drawSlot(k){
+  const img = slotImg(k);
+  document.getElementById('stamp-'+k).innerHTML = img
+    ? `<div class="big-stamp"><img src="${img}" alt="${esc(NAMES[k])}의 사진"></div>`
+    : `<div class="empty-stamp small">아직 없어요</div>`;
+}
 function openDay(key, y, m, d){
-  curKey = key; pendingImg = null;
-  const s = stamps[key] || {};
+  curKey = key; activeSlot = null;
+  pending = { a: undefined, b: undefined };
+  const s = norm(stamps[key]);
   document.getElementById('modal-title').textContent = `${y}년 ${m+1}월 ${d}일`;
-  noteInput.value = s.note || '';
-  document.getElementById('delete-btn').hidden = !s.img && !s.note;
-  drawStampArea(s.img, `${pad(m+1)}.${pad(d)}`);
+  document.getElementById('note-a').value = s?.a?.note || '';
+  document.getElementById('note-b').value = s?.b?.note || '';
+  document.getElementById('delete-btn').hidden = !(slotHas(s?.a) || slotHas(s?.b));
+  drawSlot('a'); drawSlot('b');
   fileInput.value = '';
   modal.showModal();
 }
-function drawStampArea(img, dateLabel){
-  stampArea.innerHTML = img
-    ? `<div class="big-stamp"><img src="${img}" alt="이 날의 사진">
-         <div class="postmark"><span>PAR AVION</span><b>${dateLabel}</b></div></div>`
-    : `<div class="empty-stamp">아직 스탬프가 없어요.<br>사진을 붙여 하루를 남겨보세요.</div>`;
-}
+document.querySelectorAll('.attach').forEach(btn => {
+  btn.addEventListener('click', () => {
+    activeSlot = btn.dataset.slot;
+    fileInput.click();
+  });
+});
 fileInput.addEventListener('change', () => {
   const f = fileInput.files[0];
-  if (!f) return;
+  if (!f || !activeSlot) return;
   const img = new Image();
   img.onload = () => {
     // 클라이언트에서 480px 정사각으로 압축 → 저장 용량 절약
@@ -957,22 +1033,25 @@ fileInput.addEventListener('change', () => {
     const r = Math.max(S/img.width, S/img.height);
     const w = img.width*r, h = img.height*r;
     ctx.drawImage(img, (S-w)/2, (S-h)/2, w, h);
-    pendingImg = c.toDataURL('image/jpeg', 0.82);
-    const [y,mo,d] = curKey.split('-');
-    drawStampArea(pendingImg, `${mo}.${d}`);
+    pending[activeSlot] = c.toDataURL('image/jpeg', 0.82);
+    drawSlot(activeSlot);
     URL.revokeObjectURL(img.src);
+    fileInput.value = '';
   };
   img.src = URL.createObjectURL(f);
 });
 document.getElementById('save-btn').onclick = async () => {
-  const prev = stamps[curKey] || {};
-  const data = {
-    img: pendingImg ?? prev.img ?? null,
-    note: noteInput.value.trim(),
-    ts: Date.now()
+  const buildSlot = k => {
+    const img = slotImg(k);
+    const note = document.getElementById('note-'+k).value.trim();
+    return (img || note) ? { img: img || null, note } : null;
   };
-  if (!data.img && !data.note){ modal.close(); return; }
-  await putStamp(curKey, data);
+  const a = buildSlot('a'), b = buildSlot('b');
+  if (!a && !b){
+    if (stamps[curKey]) await removeStamp(curKey);
+    modal.close(); return;
+  }
+  await putStamp(curKey, { a, b, ts: Date.now() });
   modal.close();
 };
 document.getElementById('delete-btn').onclick = async () => {
