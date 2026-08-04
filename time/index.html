@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>우리의 시간 · Par Avion</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -373,6 +373,58 @@ footer{
 }
 .sync-state{margin-top:6px}
 .sync-state.on{color:var(--blue)}
+.export-row{display:flex;gap:14px;justify-content:center;margin-top:14px}
+.export-row .linkish{margin-top:0}
+
+/* ── 반응형: 아이패드 (601~900px) ─────────────────── */
+@media (max-width:900px){
+  .wrap{padding:24px 16px 56px}
+  .clock .time{font-size:clamp(30px,5.5vw,40px)}
+}
+
+/* ── 반응형: 아이폰 (~600px) ──────────────────────── */
+@media (max-width:600px){
+  .wrap{
+    padding:18px 10px 48px;
+    padding-left:max(10px, env(safe-area-inset-left));
+    padding-right:max(10px, env(safe-area-inset-right));
+  }
+  header{margin-bottom:22px}
+  header h1{font-size:24px}
+  .route{font-size:11px;gap:8px}
+  .route .path{flex-basis:110px}
+  .clock{padding:14px 16px 14px}
+  .clock .time{font-size:34px}
+  .clock .postcode{width:38px;height:38px;font-size:9.5px;top:10px;right:10px}
+  .tz-select{font-size:15px;max-width:150px}
+  .diff{margin:12px 0 28px;font-size:13.5px}
+  .pick{font-size:18px}
+  .seg button{padding:0 11px;height:32px;font-size:12px}
+  .cal-head button{width:32px;height:32px}
+  .weekdays,.grid{gap:3px}
+  .weekdays div{font-size:9.5px;letter-spacing:.04em}
+  .day{padding:4px;border-radius:4px}
+  .day .num{font-size:10.5px}
+  .day.today .num{width:17px;height:17px}
+  .mini-stamp{padding:3px;--hole:2px;--gap:7px;max-width:52px}
+  .stamp-pair .mini-stamp{max-width:36px}
+  .grid.week{grid-template-columns:1fr;gap:8px}       /* 주 보기: 폰에선 세로 목록 */
+  .grid.week .day{flex-direction:row;align-items:center;gap:10px;min-height:64px;padding:8px 10px}
+  .grid.week .day .num{align-self:center;min-width:22px}
+  .grid.week .mini-stamp{margin-top:0;width:48px;max-width:48px;flex-shrink:0}
+  .grid.week .stamp-pair{width:auto;margin-top:0;flex-shrink:0}
+  .grid.week .stamp-pair .mini-stamp{width:44px}
+  .grid.week .mini-note{margin-top:0;text-align:left;-webkit-line-clamp:2;flex:1}
+  .modal-body{padding:16px 14px 18px}
+  .slot .btn{font-size:12px;padding:7px 4px}
+  .slot textarea{font-size:12.5px;min-height:44px}
+}
+
+/* 아주 좁은 화면(작은 아이폰): 모달 슬롯 세로 배치 */
+@media (max-width:420px){
+  .slots{grid-template-columns:1fr;gap:16px}
+  .slot .big-stamp{width:min(200px,70%);margin:0 auto 8px}
+}
 </style>
 </head>
 <body>
@@ -486,6 +538,10 @@ footer{
   <footer>
     PAR AVION · WHEREVER WE ARE
     <div class="sync-state" id="sync-state">이 기기에만 저장 중 (Firebase 미연결)</div>
+    <div class="export-row">
+      <button type="button" class="linkish" id="export-album">앨범 내보내기</button>
+      <button type="button" class="linkish" id="export-json">데이터 백업 (JSON)</button>
+    </div>
   </footer>
 </div>
 
@@ -1129,6 +1185,75 @@ document.getElementById('delete-btn').onclick = async () => {
 };
 document.getElementById('close-btn').onclick = () => modal.close();
 modal.addEventListener('click', e => { if (e.target === modal) modal.close(); });
+
+/* ── 내보내기: 앨범(HTML) / 백업(JSON) ─────────────── */
+function download(name, content, type){
+  const blob = new Blob([content], {type});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = name;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+}
+function buildAlbumHtml(){
+  const keys = Object.keys(stamps)
+    .filter(k => { const s = norm(stamps[k]); return slotHas(s?.a) || slotHas(s?.b); })
+    .sort();
+  const months = {};
+  keys.forEach(k => { const m = k.slice(0,7); (months[m] ??= []).push(k); });
+  const dayLabel = k => {
+    const [y,mo,d] = k.split('-');
+    const dt = new Date(+y, +mo-1, +d);
+    return `${+mo}월 ${+d}일 ${['일','월','화','수','목','금','토'][dt.getDay()]}요일`;
+  };
+  const slotCard = (sl, who, color) => !slotHas(sl) ? '' : `
+    <figure class="card ${color}">
+      ${sl.img ? `<img src="${sl.img}" alt="">` : ''}
+      <figcaption><b>${esc(who)}</b>${sl.note ? `<span>${esc(sl.note)}</span>` : ''}</figcaption>
+    </figure>`;
+  const body = Object.keys(months).sort().map(m => {
+    const [y,mo] = m.split('-');
+    return `<section><h2>${y}년 ${+mo}월</h2>` + months[m].map(k => {
+      const s = norm(stamps[k]);
+      return `<article><h3>${dayLabel(k)}</h3><div class="pair">` +
+        slotCard(s?.a, NAMES.a, 'red') + slotCard(s?.b, NAMES.b, 'blue') +
+        `</div></article>`;
+    }).join('') + `</section>`;
+  }).join('');
+  return `<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>우리의 시간 · 앨범</title>
+<style>
+  body{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;background:#F5F2EA;color:#22303E;margin:0;padding:32px 16px 64px}
+  .stripe{height:10px;background:repeating-linear-gradient(135deg,#C2372B 0 12px,#F5F2EA 12px 17px,#2F5794 17px 29px,#F5F2EA 29px 34px);margin:-32px -16px 28px}
+  .head{text-align:center;margin-bottom:36px}
+  .head h1{font-size:26px;margin:0}
+  .head p{color:#8A8577;font-size:13px}
+  section{max-width:760px;margin:0 auto 40px}
+  h2{font-size:20px;border-bottom:1.5px dashed #D9D3C4;padding-bottom:8px}
+  article{margin:22px 0}
+  h3{font-size:14px;color:#8A8577;font-weight:600;margin:0 0 10px}
+  .pair{display:flex;gap:14px;flex-wrap:wrap}
+  .card{margin:0;background:#fff;padding:8px 8px 10px;box-shadow:0 1px 5px rgba(34,48,62,.18);width:min(46%,240px);transform:rotate(-1.2deg)}
+  .card.blue{transform:rotate(1.2deg)}
+  .card img{width:100%;display:block}
+  figcaption{font-size:12.5px;margin-top:8px;line-height:1.5}
+  figcaption b{display:block}
+  .card.red b{color:#C2372B}.card.blue b{color:#2F5794}
+  figcaption span{white-space:pre-wrap;word-break:break-all}
+  @media(max-width:480px){.card{width:100%}}
+</style></head><body>
+<div class="stripe"></div>
+<div class="head"><h1>우리의 시간</h1><p>${keys.length}일의 기록 · ${new Date().toLocaleDateString('ko-KR')} 내보냄</p></div>
+${body || '<p style="text-align:center;color:#8A8577">아직 스탬프가 없어요</p>'}
+</body></html>`;
+}
+document.getElementById('export-album').addEventListener('click', () => {
+  download(`our-time-album-${new Date().toISOString().slice(0,10)}.html`, buildAlbumHtml(), 'text/html');
+});
+document.getElementById('export-json').addEventListener('click', () => {
+  download(`our-time-backup-${new Date().toISOString().slice(0,10)}.json`, JSON.stringify(stamps, null, 2), 'application/json');
+});
 
 onTzChange();            // 라벨 + 시계 + 달력 첫 렌더
 setInterval(tick, 1000);
