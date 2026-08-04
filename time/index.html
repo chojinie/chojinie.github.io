@@ -658,18 +658,15 @@ document.getElementById('bio-no').addEventListener('click', () => {
    3. 빌드 > Firestore Database 만들기 (테스트 모드로 시작)
    4. 저장 후 git push — 두 사람 모두 같은 주소로 접속하면 자동 동기화
    ═══════════════════════════════════════════════════════════ */
-const firebaseConfig = null;
-/* 예시 — 콘솔에서 복사한 객체를 그대로 붙여넣으면 됩니다:
 const firebaseConfig = {
-  apiKey: "...",
-  authDomain: "...",
-  projectId: "...",
-  storageBucket: "...",
-  messagingSenderId: "...",
-  appId: "..."
+  apiKey: "AIzaSyBLIWwplKJt8G0UfwP_ar7wGywtaF4Qk1I",
+  authDomain: "our-time-51cdf.firebaseapp.com",
+  projectId: "our-time-51cdf",
+  storageBucket: "our-time-51cdf.firebasestorage.app",
+  messagingSenderId: "1012737345469",
+  appId: "1:1012737345469:web:394b52671b5d65548cf4d4"
 };
-*/
-const COUPLE_ID = "our-room"; // 우리 둘만의 방 이름 (원하는 문자열로)
+const COUPLE_ID = "our-time"; // 우리 둘만의 방 이름 (원하는 문자열로)
 
 /* ── 도시 목록 ─────────────────────────────────────
    자주 가는 곳: 한글 이름 + 소인 코드. 그 외 전 세계 타임존 전체 선택 가능 */
@@ -796,7 +793,7 @@ let stamps = {};          // { 'YYYY-MM-DD': { a:{img,note}, b:{img,note}, ts } 
 let db = null;
 
 /* 두 사람 이름 — 원하는 이름으로 바꾸세요 (a: 빨간 소인, b: 파란 소인) */
-const NAMES = { a: '현진', b: '연인' };
+const NAMES = { a: '현진', b: '수연' };
 
 /* 예전 형식({img, note})으로 저장된 날은 첫 번째 칸으로 인식 */
 function norm(s){
