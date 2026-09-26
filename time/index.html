@@ -7,6 +7,12 @@
 <link rel="apple-touch-icon" href="miffy.JPG">
 <link rel="icon" type="image/jpeg" href="miffy.JPG">
 <meta name="apple-mobile-web-app-title" content="우리의 시간">
+<!-- Firebase 연결을 미리 열어둬서 첫 요청 지연을 줄임 -->
+<link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://firestore.googleapis.com" crossorigin>
+<link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js" crossorigin>
+<link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js" crossorigin>
+<link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js" crossorigin>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=IBM+Plex+Sans+KR:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
@@ -738,13 +744,17 @@ document.getElementById('bio-no').addEventListener('click', () => {
 });
 
 /* ═══════════════════════════════════════════════════════════
-   ① Firebase 연동 (선택사항 — 비워두면 이 기기에만 저장됩니다)
+   ① Firebase 연동
 
-   둘이서 스탬프를 실시간 공유하려면:
-   1. https://console.firebase.google.com 에서 새 프로젝트 생성 (무료)
-   2. 웹 앱 추가 → firebaseConfig 값을 아래에 붙여넣기
-   3. 빌드 > Firestore Database 만들기 (테스트 모드로 시작)
-   4. 저장 후 git push — 두 사람 모두 같은 주소로 접속하면 자동 동기화
+   데이터 구조 (빠른 로딩용으로 둘로 나눔)
+   - couples/{COUPLE_ID}/stamps/{YYYY-MM-DD} : 작은 썸네일(160px) + 메모
+       → 달력에 보이는 기간만 불러옴
+   - couples/{COUPLE_ID}/full/{YYYY-MM-DD}   : 원본(480px) 사진
+       → 하루 보기 / 날짜 창을 열 때만 불러옴
+   ※ Firestore 보안 규칙에 full 컬렉션도 추가해야 해요.
+
+   예전 형식 데이터 변환 (한 번만, 로그인 후 콘솔에서):
+     await migrateThumbs()
    ═══════════════════════════════════════════════════════════ */
 const firebaseConfig = {
     apiKey: "AIzaSyBLIWwplKJt8G0UfwP_ar7wGywtaF4Qk1I",
@@ -754,7 +764,7 @@ const firebaseConfig = {
     messagingSenderId: "1012737345469",
     appId: "1:1012737345469:web:394b52671b5d65548cf4d4"
 };
-  
+
 const COUPLE_ID = "our-room"; // 우리 둘만의 방 이름 (원하는 문자열로)
 
 /* ── 도시 목록 ─────────────────────────────────────
@@ -880,10 +890,32 @@ function tick(){
 }
 // 초기 렌더는 스크립트 맨 아래에서 실행 (달력 변수 초기화 이후)
 
+/* ── 이미지 크기 ─────────────────────────────────── */
+const FULL_SIZE = 480,  FULL_Q = 0.82;   // 원본 (하루 보기·날짜 창)
+const THUMB_SIZE = 160, THUMB_Q = 0.7;   // 썸네일 (월·주 달력)
+
+function resizeToDataURL(src, S, q){
+  return new Promise((res, rej) => {
+    const img = new Image();
+    img.onload = () => {
+      const c = document.createElement('canvas');
+      c.width = c.height = S;
+      const ctx = c.getContext('2d');
+      const r = Math.max(S/img.width, S/img.height);
+      const w = img.width*r, h = img.height*r;
+      ctx.drawImage(img, (S-w)/2, (S-h)/2, w, h);
+      res(c.toDataURL('image/jpeg', q));
+    };
+    img.onerror = rej;
+    img.src = src;
+  });
+}
+
 /* ── 저장소 (localStorage ↔ Firebase 자동 전환) ──── */
 const LS_KEY = 'our-time-stamps-v1';
-let stamps = {};          // { 'YYYY-MM-DD': { a:{img,note}, b:{img,note}, ts } }
-let db = null;
+let stamps = {};          // { 'YYYY-MM-DD': { a:{thumb,note}, b:{thumb,note}, ts } }
+const fullCache = {};     // { 'YYYY-MM-DD': { a: 원본, b: 원본 } } — 필요할 때만 채움
+let db = null;            // { fs, ref, fullRef }
 
 /* 두 사람 이름 — 원하는 이름으로 바꾸세요 (a: 빨간 소인, b: 파란 소인) */
 const NAMES = { a: '현진', b: '수연' };
@@ -894,35 +926,109 @@ function norm(s){
   if ('a' in s || 'b' in s) return s;
   return { a: { img: s.img || null, note: s.note || '' }, b: null, ts: s.ts };
 }
-const slotHas = sl => !!(sl && (sl.img || (sl.note && sl.note.trim())));
+const slotHas = sl => !!(sl && (sl.img || sl.thumb || (sl.note && sl.note.trim())));
+/* 달력용 작은 사진 (예전 데이터는 원본을 그대로 씀) */
+const thumbOf = sl => sl?.thumb || sl?.img || null;
+/* 큰 사진: 불러온 원본 → 예전 형식 원본 → 없으면 null */
+function fullOf(key, k){
+  return fullCache[key]?.[k] || norm(stamps[key])?.[k]?.img || null;
+}
+/* 이 날의 원본을 아직 안 불러왔는지 */
+function needsFull(key){
+  if (!db || fullCache[key]) return false;
+  const s = norm(stamps[key]);
+  return !!(s && ['a','b'].some(k => s[k]?.thumb));
+}
+async function loadFull(key){
+  if (!needsFull(key)) return;
+  try{
+    const snap = await db.fs.getDoc(db.fs.doc(db.fullRef, key));
+    fullCache[key] = snap.exists() ? snap.data() : {};
+  }catch(e){
+    console.error('원본 사진 불러오기 실패', e);
+    fullCache[key] = {};   // 썸네일로 대신 표시
+  }
+}
 
 function loadLocal(){ try{ stamps = JSON.parse(localStorage.getItem(LS_KEY)) || {}; }catch(e){ stamps = {}; } }
-function saveLocalAll(){ localStorage.setItem(LS_KEY, JSON.stringify(stamps)); }
+function saveLocalAll(){
+  try{ localStorage.setItem(LS_KEY, JSON.stringify(stamps)); }
+  catch(e){ alert('이 기기의 저장 공간이 가득 찼어요. 구글 로그인으로 동기화해주세요.'); }
+}
 
 /* 구글 로그인으로 데이터 잠금 (Firestore 보안 규칙과 세트) */
 const REQUIRE_LOGIN = true;
+
+/* 지금 화면에 보이는 날짜 범위만 실시간 구독 */
+let unsub = null, subRange = '';
+function visibleRange(){
+  if (mode === 'month'){
+    const y = anchor.getFullYear(), m = anchor.getMonth();
+    return [dateKey(y, m, 1), dateKey(y, m, new Date(y, m+1, 0).getDate())];
+  }
+  if (mode === 'week'){
+    const start = new Date(anchor); start.setDate(anchor.getDate() - anchor.getDay());
+    const end = new Date(start); end.setDate(start.getDate() + 6);
+    return [keyOf(start), keyOf(end)];
+  }
+  const k = keyOf(anchor); return [k, k];
+}
+function subscribeVisible(){
+  if (!db) return;
+  const [s, e] = visibleRange();
+  const r = s + '|' + e;
+  if (r === subRange) return;
+  subRange = r;
+  if (unsub) unsub();
+  const fs = db.fs;
+  const q = fs.query(db.ref,
+    fs.where(fs.documentId(), '>=', s),
+    fs.where(fs.documentId(), '<=', e));
+  unsub = fs.onSnapshot(q, snap => {
+    // 상대가 사진을 바꾸면 원본 캐시도 비워서 다시 받게
+    snap.docChanges().forEach(ch => { if (ch.type !== 'added') delete fullCache[ch.doc.id]; });
+    for (const k of Object.keys(stamps)) if (k >= s && k <= e) delete stamps[k];
+    snap.forEach(d => stamps[d.id] = d.data());
+    renderCalendar();
+  }, err => { setSync('이 계정은 접근 권한이 없어요', false); console.error(err); });
+}
 
 async function initStore(){
   loadLocal(); renderCalendar();
   if (!firebaseConfig) return;
   try{
-    const appMod = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js');
-    const fsMod  = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js');
+    // 세 모듈을 동시에 받아옴 (예전엔 하나씩 차례로)
+    const [appMod, fsMod, authMod] = await Promise.all([
+      import('https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js'),
+      import('https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js'),
+      REQUIRE_LOGIN ? import('https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js') : null,
+    ]);
     const app = appMod.initializeApp(firebaseConfig);
-    const ref = fsMod.collection(fsMod.getFirestore(app), 'couples', COUPLE_ID, 'stamps');
 
-    const attach = (email) => {
+    // 기기 캐시(IndexedDB): 두 번째 방문부터는 받은 사진을 바로 보여주고 바뀐 것만 새로 받음
+    let firestore;
+    try{
+      firestore = fsMod.initializeFirestore(app, {
+        localCache: fsMod.persistentLocalCache({ tabManager: fsMod.persistentMultipleTabManager() })
+      });
+    }catch(e){
+      console.warn('오프라인 캐시 사용 불가, 기본 모드로', e);
+      firestore = fsMod.getFirestore(app);
+    }
+    const ref     = fsMod.collection(firestore, 'couples', COUPLE_ID, 'stamps');
+    const fullRef = fsMod.collection(firestore, 'couples', COUPLE_ID, 'full');
+
+    const attach = () => {
       if (db) return;
-      db = { fs: fsMod, ref };
-      fsMod.onSnapshot(ref,
-        snap => { stamps = {}; snap.forEach(d => stamps[d.id] = d.data()); renderCalendar(); },
-        err => { setSync('이 계정은 접근 권한이 없어요', false); console.error(err); });
+      db = { fs: fsMod, ref, fullRef };
+      stamps = {};             // 로컬 기록 대신 서버 데이터 사용
+      subRange = '';
+      renderCalendar();        // → subscribeVisible()
       setSync('두 사람 실시간 동기화 중 ✓', true);
     };
 
     if (!REQUIRE_LOGIN){ attach(); return; }
 
-    const authMod = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js');
     const auth = authMod.getAuth(app);
     const gate = document.getElementById('auth-gate');
 
@@ -943,7 +1049,7 @@ async function initStore(){
     authMod.onAuthStateChanged(auth, user => {
       if (user){
         gate.hidden = true;
-        attach(user.email);
+        attach();
       } else if (!sessionStorage.getItem('our-time-authskip')){
         setSync('구글 로그인 대기 중', false);
         gate.hidden = false;
@@ -959,18 +1065,67 @@ function setSync(text, on){
   el.textContent = text;
   el.classList.toggle('on', !!on);
 }
-async function putStamp(key, data){
-  stamps[key] = data;
-  if (db){ await db.fs.setDoc(db.fs.doc(db.ref, key), data); }
-  else saveLocalAll();
-  renderCalendar();
+/* data: 달력용 문서 {a:{thumb,note}, b, ts}
+   fullWrites: 새로 바뀐 원본만 {a?: 원본, b?: 원본} */
+async function putStamp(key, data, fullWrites){
+  const hasFull = fullWrites && Object.keys(fullWrites).length > 0;
+  if (db){
+    stamps[key] = data;
+    if (hasFull) fullCache[key] = { ...(fullCache[key] || {}), ...fullWrites };
+    renderCalendar();
+    try{
+      if (hasFull) await db.fs.setDoc(db.fs.doc(db.fullRef, key), fullWrites, { merge: true });
+      await db.fs.setDoc(db.fs.doc(db.ref, key), data);
+    }catch(e){ console.error(e); setSync('저장에 실패했어요. 연결을 확인해주세요', false); }
+  } else {
+    // 로컬 모드: 원본도 같은 곳에 저장
+    for (const k of ['a','b']){
+      if (data[k]) data[k].img = fullWrites?.[k] ?? fullOf(key, k) ?? null;
+    }
+    stamps[key] = data;
+    saveLocalAll();
+    renderCalendar();
+  }
 }
 async function removeStamp(key){
   delete stamps[key];
-  if (db){ await db.fs.deleteDoc(db.fs.doc(db.ref, key)); }
-  else saveLocalAll();
+  delete fullCache[key];
   renderCalendar();
+  if (db){
+    try{
+      await Promise.all([
+        db.fs.deleteDoc(db.fs.doc(db.ref, key)),
+        db.fs.deleteDoc(db.fs.doc(db.fullRef, key)),
+      ]);
+    }catch(e){ console.error(e); setSync('삭제에 실패했어요. 연결을 확인해주세요', false); }
+  } else saveLocalAll();
 }
+
+/* 예전 형식(원본이 달력 문서에 들어 있음) → 썸네일/원본 분리. 로그인 후 콘솔에서 한 번 실행 */
+window.migrateThumbs = async () => {
+  if (!db) return console.warn('구글 로그인 후 다시 실행해주세요');
+  const snap = await db.fs.getDocs(db.ref);
+  let n = 0;
+  for (const d of snap.docs){
+    const s = norm(d.data());
+    if (!['a','b'].some(k => s[k]?.img)) continue;
+    const out = { ts: s.ts || Date.now() }, full = {};
+    for (const k of ['a','b']){
+      const sl = s[k];
+      if (!sl){ out[k] = null; continue; }
+      if (sl.img){
+        full[k] = sl.img;
+        out[k] = { thumb: await resizeToDataURL(sl.img, THUMB_SIZE, THUMB_Q), note: sl.note || '' };
+      } else {
+        out[k] = { thumb: sl.thumb || null, note: sl.note || '' };
+      }
+    }
+    await db.fs.setDoc(db.fs.doc(db.fullRef, d.id), full, { merge: true }); // 원본 먼저
+    await db.fs.setDoc(db.fs.doc(db.ref, d.id), out);
+    n++; console.log('변환 완료:', d.id);
+  }
+  console.log(`끝! ${n}일 변환했어요`);
+};
 
 /* ── 달력: 일 / 주 / 월 보기 (첫 번째 시계의 시간대 기준) ── */
 const MODE_KEY = 'our-time-view-v1';
@@ -1018,7 +1173,7 @@ document.querySelectorAll('.seg button').forEach(b => {
   });
 });
 
-/* 공용 날짜 셀 */
+/* 공용 날짜 셀 (썸네일만 사용) */
 function cellFor(d, {tall=false} = {}){
   const key = keyOf(d);
   const cell = document.createElement('button');
@@ -1027,15 +1182,14 @@ function cellFor(d, {tall=false} = {}){
   if (key === todayKey()) cell.classList.add('today');
   cell.setAttribute('aria-label', `${d.getMonth()+1}월 ${d.getDate()}일`);
   const s = norm(stamps[key]);
-  const imgs = ['a','b'].map(k => s?.[k]?.img).filter(Boolean);
+  const imgs = ['a','b'].map(k => thumbOf(s?.[k])).filter(Boolean);
   const notes = ['a','b'].map(k => s?.[k]?.note?.trim()).filter(Boolean);
   let inner = `<span class="num">${d.getDate()}</span>`;
+  const im = src => `<span class="mini-stamp"><img src="${src}" alt="" decoding="async"></span>`;
   if (imgs.length === 2){
-    inner += `<span class="stamp-pair">` +
-      imgs.map(im => `<span class="mini-stamp"><img src="${im}" alt=""></span>`).join('') +
-      `</span>`;
+    inner += `<span class="stamp-pair">` + imgs.map(im).join('') + `</span>`;
   } else if (imgs.length === 1){
-    inner += `<span class="mini-stamp"><img src="${imgs[0]}" alt=""></span>`;
+    inner += im(imgs[0]);
   }
   if (tall && notes.length) inner += `<span class="mini-note">${esc(notes.join(' / '))}</span>`;
   if (!tall && notes.length && !imgs.length) inner += `<span class="dot-note"></span>`;
@@ -1070,10 +1224,17 @@ function renderDay(){
   rangeLabel.textContent = new Intl.DateTimeFormat('ko-KR',
     {year:'numeric', month:'long', day:'numeric', weekday:'long'}).format(d);
   const s = norm(stamps[key]);
-  const stampHtml = (sl) => sl?.img
-    ? `<div class="big-stamp"><img src="${sl.img}" alt="이 날의 사진">
-         <div class="postmark"><span>PAR AVION</span><b>${pad(d.getMonth()+1)}.${pad(d.getDate())}</b></div></div>`
-    : `<div class="empty-stamp small">아직 없어요</div>`;
+  // 썸네일을 먼저 보여주고, 원본이 오면 다시 그림
+  if (needsFull(key)){
+    loadFull(key).then(() => { if (mode === 'day' && keyOf(anchor) === key) renderCalendar(); });
+  }
+  const stampHtml = (k) => {
+    const src = fullOf(key, k) || thumbOf(s?.[k]);
+    return src
+      ? `<div class="big-stamp"><img src="${src}" alt="이 날의 사진" decoding="async">
+           <div class="postmark"><span>PAR AVION</span><b>${pad(d.getMonth()+1)}.${pad(d.getDate())}</b></div></div>`
+      : `<div class="empty-stamp small">아직 없어요</div>`;
+  };
   const card = document.createElement('button');
   card.className = 'day-single';
   card.setAttribute('aria-label', '이 날 편집하기');
@@ -1081,7 +1242,7 @@ function renderDay(){
     ['a','b'].map(k => `
       <div class="ds-slot">
         <div class="slot-name" style="color:var(--${k==='a'?'red':'blue'})">${esc(NAMES[k])}</div>
-        ${stampHtml(s?.[k])}
+        ${stampHtml(k)}
         ${s?.[k]?.note ? `<p class="ds-note">${esc(s[k].note)}</p>` : ''}
       </div>`).join('') +
     `</div>` +
@@ -1092,6 +1253,7 @@ function renderDay(){
 
 function renderCalendar(){
   syncPickers();
+  subscribeVisible();
   document.querySelectorAll('.seg button')
     .forEach(b => b.classList.toggle('on', b.dataset.mode === mode));
   weekdaysRow.style.display = (mode === 'day') ? 'none' : 'grid';
@@ -1117,19 +1279,19 @@ document.getElementById('today-btn').onclick = () => { anchor = new Date(); rend
 const modal = document.getElementById('day-modal');
 const fileInput = document.getElementById('file-input');
 let curKey = null, activeSlot = null;
-let pending = { a: undefined, b: undefined };   // undefined = 변경 없음
+let pending = { a: undefined, b: undefined };   // undefined = 변경 없음, {full, thumb} = 새 사진
 
 document.getElementById('name-a').textContent = NAMES.a;
 document.getElementById('name-b').textContent = NAMES.b;
 
 function slotImg(k){
-  if (pending[k] !== undefined) return pending[k];
-  return norm(stamps[curKey])?.[k]?.img || null;
+  if (pending[k]) return pending[k].full;
+  return fullOf(curKey, k) || thumbOf(norm(stamps[curKey])?.[k]);
 }
 function drawSlot(k){
   const img = slotImg(k);
   document.getElementById('stamp-'+k).innerHTML = img
-    ? `<div class="big-stamp"><img src="${img}" alt="${esc(NAMES[k])}의 사진"></div>`
+    ? `<div class="big-stamp"><img src="${img}" alt="${esc(NAMES[k])}의 사진" decoding="async"></div>`
     : `<div class="empty-stamp small">아직 없어요</div>`;
 }
 function openDay(key, y, m, d){
@@ -1140,9 +1302,17 @@ function openDay(key, y, m, d){
   document.getElementById('note-a').value = s?.a?.note || '';
   document.getElementById('note-b').value = s?.b?.note || '';
   document.getElementById('delete-btn').hidden = !(slotHas(s?.a) || slotHas(s?.b));
-  drawSlot('a'); drawSlot('b');
+  drawSlot('a'); drawSlot('b');   // 썸네일로 바로 표시
   fileInput.value = '';
   modal.showModal();
+  if (needsFull(key)){
+    loadFull(key).then(() => {
+      if (curKey === key && modal.open){
+        if (!pending.a) drawSlot('a');
+        if (!pending.b) drawSlot('b');
+      }
+    });
+  }
 }
 document.querySelectorAll('.attach').forEach(btn => {
   btn.addEventListener('click', () => {
@@ -1150,41 +1320,55 @@ document.querySelectorAll('.attach').forEach(btn => {
     fileInput.click();
   });
 });
-fileInput.addEventListener('change', () => {
+fileInput.addEventListener('change', async () => {
   const f = fileInput.files[0];
-  if (!f || !activeSlot) return;
-  const img = new Image();
-  img.onload = () => {
-    // 클라이언트에서 480px 정사각으로 압축 → 저장 용량 절약
-    const S = 480, c = document.createElement('canvas');
-    c.width = c.height = S;
-    const ctx = c.getContext('2d');
-    const r = Math.max(S/img.width, S/img.height);
-    const w = img.width*r, h = img.height*r;
-    ctx.drawImage(img, (S-w)/2, (S-h)/2, w, h);
-    pending[activeSlot] = c.toDataURL('image/jpeg', 0.82);
-    drawSlot(activeSlot);
-    URL.revokeObjectURL(img.src);
+  const slot = activeSlot;
+  if (!f || !slot) return;
+  const url = URL.createObjectURL(f);
+  try{
+    // 원본 480px + 달력용 160px 썸네일 두 가지로 압축
+    const full  = await resizeToDataURL(url, FULL_SIZE, FULL_Q);
+    const thumb = await resizeToDataURL(full, THUMB_SIZE, THUMB_Q);
+    pending[slot] = { full, thumb };
+    drawSlot(slot);
+  }catch(e){
+    alert('사진을 읽지 못했어요. 다른 사진으로 시도해주세요.');
+  }finally{
+    URL.revokeObjectURL(url);
     fileInput.value = '';
-  };
-  img.src = URL.createObjectURL(f);
+  }
 });
 document.getElementById('save-btn').onclick = async () => {
-  const buildSlot = k => {
-    const img = slotImg(k);
+  const key = curKey;
+  await loadFull(key);                 // 아직 원본이 안 왔으면 기다림
+  const s = norm(stamps[key]);
+  const data = { ts: Date.now() }, fullWrites = {};
+  for (const k of ['a','b']){
     const note = document.getElementById('note-'+k).value.trim();
-    return (img || note) ? { img: img || null, note } : null;
-  };
-  const a = buildSlot('a'), b = buildSlot('b');
-  if (!a && !b){
-    if (stamps[curKey]) await removeStamp(curKey);
-    modal.close(); return;
+    let thumb, full;
+    if (pending[k]){
+      ({ thumb, full } = pending[k]);
+      fullWrites[k] = full;
+    } else {
+      full = fullOf(key, k);
+      thumb = s?.[k]?.thumb || null;
+      // 예전 형식(원본만 있음) → 저장하면서 썸네일로 분리
+      if (!thumb && full){
+        thumb = await resizeToDataURL(full, THUMB_SIZE, THUMB_Q);
+        fullWrites[k] = full;
+      }
+    }
+    data[k] = (thumb || note) ? { thumb: thumb || null, note } : null;
   }
-  await putStamp(curKey, { a, b, ts: Date.now() });
   modal.close();
+  if (!data.a && !data.b){
+    if (stamps[key]) await removeStamp(key);
+    return;
+  }
+  await putStamp(key, data, fullWrites);
 };
 document.getElementById('delete-btn').onclick = async () => {
-  await removeStamp(curKey); modal.close();
+  const key = curKey; modal.close(); await removeStamp(key);
 };
 document.getElementById('close-btn').onclick = () => modal.close();
 modal.addEventListener('click', e => { if (e.target === modal) modal.close(); });
@@ -1198,9 +1382,37 @@ function download(name, content, type){
   a.click();
   setTimeout(() => URL.revokeObjectURL(a.href), 5000);
 }
-function buildAlbumHtml(){
-  const keys = Object.keys(stamps)
-    .filter(k => { const s = norm(stamps[k]); return slotHas(s?.a) || slotHas(s?.b); })
+/* 내보낼 때만 전체 기록 + 원본을 한 번에 받음 → { key: {a:{img,thumb,note}, b, ts} } */
+async function loadEverything(){
+  if (!db){
+    const out = {};
+    for (const k of Object.keys(stamps)) out[k] = norm(stamps[k]);
+    return out;
+  }
+  const [sSnap, fSnap] = await Promise.all([db.fs.getDocs(db.ref), db.fs.getDocs(db.fullRef)]);
+  const full = {};
+  fSnap.forEach(d => full[d.id] = d.data());
+  const out = {};
+  sSnap.forEach(d => {
+    const s = norm(d.data());
+    const merged = { ts: s.ts };
+    for (const k of ['a','b']){
+      merged[k] = s[k] ? { ...s[k], img: full[d.id]?.[k] || s[k].img || s[k].thumb || null } : null;
+    }
+    out[d.id] = merged;
+  });
+  return out;
+}
+async function withBusy(btn, label, fn){
+  const old = btn.textContent;
+  btn.textContent = label; btn.disabled = true;
+  try{ await fn(); }
+  catch(e){ console.error(e); alert('내보내기에 실패했어요. 연결을 확인해주세요.'); }
+  finally{ btn.textContent = old; btn.disabled = false; }
+}
+function buildAlbumHtml(all){
+  const keys = Object.keys(all)
+    .filter(k => slotHas(all[k]?.a) || slotHas(all[k]?.b))
     .sort();
   const months = {};
   keys.forEach(k => { const m = k.slice(0,7); (months[m] ??= []).push(k); });
@@ -1217,7 +1429,7 @@ function buildAlbumHtml(){
   const body = Object.keys(months).sort().map(m => {
     const [y,mo] = m.split('-');
     return `<section><h2>${y}년 ${+mo}월</h2>` + months[m].map(k => {
-      const s = norm(stamps[k]);
+      const s = all[k];
       return `<article><h3>${dayLabel(k)}</h3><div class="pair">` +
         slotCard(s?.a, NAMES.a, 'red') + slotCard(s?.b, NAMES.b, 'blue') +
         `</div></article>`;
@@ -1251,12 +1463,16 @@ function buildAlbumHtml(){
 ${body || '<p style="text-align:center;color:#8A8577">아직 스탬프가 없어요</p>'}
 </body></html>`;
 }
-document.getElementById('export-album').addEventListener('click', () => {
-  download(`our-time-album-${new Date().toISOString().slice(0,10)}.html`, buildAlbumHtml(), 'text/html');
-});
-document.getElementById('export-json').addEventListener('click', () => {
-  download(`our-time-backup-${new Date().toISOString().slice(0,10)}.json`, JSON.stringify(stamps, null, 2), 'application/json');
-});
+const exportAlbumBtn = document.getElementById('export-album');
+const exportJsonBtn  = document.getElementById('export-json');
+exportAlbumBtn.addEventListener('click', () => withBusy(exportAlbumBtn, '모으는 중…', async () => {
+  const all = await loadEverything();
+  download(`our-time-album-${new Date().toISOString().slice(0,10)}.html`, buildAlbumHtml(all), 'text/html');
+}));
+exportJsonBtn.addEventListener('click', () => withBusy(exportJsonBtn, '모으는 중…', async () => {
+  const all = await loadEverything();
+  download(`our-time-backup-${new Date().toISOString().slice(0,10)}.json`, JSON.stringify(all, null, 2), 'application/json');
+}));
 
 onTzChange();            // 라벨 + 시계 + 달력 첫 렌더
 setInterval(tick, 1000);
