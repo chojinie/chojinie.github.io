@@ -1,494 +1,979 @@
-<!DOCTYPE HTML>
-<html lang="en">
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>Hyunjin Cho</title>
-    <meta name="author" content="Hyun jin Cho">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="shortcut icon" href="images/favicon/favicon.ico" type="image/x-icon">
-    <link rel="stylesheet" type="text/css" href="stylesheet.css">
+\<!DOCTYPE HTML>
 
-    <style>
-      .profile-row {
-        display: table-row;
-      }
+\<html lang="en">
 
-      .profile-text-cell {
-        padding: 2.5%;
-        width: 63%;
-        vertical-align: middle;
-      }
+&#x20; \<head>
 
-      .profile-image-cell {
-        padding: 2.5%;
-        width: 37%;
-        max-width: 37%;
-        overflow: hidden;
-        text-align: center;
-        vertical-align: middle;
-      }
+&#x20;   \<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
-      .bio-text {
-        font-size: 115%;
-        letter-spacing: 0.01em;
-        line-height: 1.65;
-      }
+&#x20;   \<title>Hyunjin Cho\</title>
 
-      .profile-photo-wrapper {
-        width: clamp(180px, 26vw, 220px);
-        height: clamp(180px, 26vw, 220px);
-        border-radius: 50%;
-        overflow: hidden;
-        margin: auto;
-      }
+&#x20;   \<meta name="author" content="Hyun jin Cho">
 
-      .profile-photo {
-        width: 100%;
-        height: 100%;
-        display: block;
-        object-fit: cover;
-        object-position: center 30%;
-        transform: scale(1.20);
-      }
+&#x20;   \<meta name="viewport" content="width=device-width, initial-scale=1">
+
+&#x20;   \<link rel="shortcut icon" href="images/favicon/favicon.ico" type="image/x-icon">
+
+&#x20;   \<link rel="stylesheet" type="text/css" href="stylesheet.css">
 
 
-      .section-heading {
-        padding: 16px;
-        width: 100%;
-        vertical-align: middle;
-      }
 
-      .experience-grid {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 22px 24px;
-        padding: 4px 16px 28px 16px;
-        box-sizing: border-box;
-      }
+&#x20;   \<style>
 
-      .experience-card {
-        display: flex;
-        align-items: center;
-        gap: 16px;
-        min-height: 106px;
-        padding: 12px 14px;
-        box-sizing: border-box;
-      }
+&#x20;     .profile-row {
 
-      .experience-logo {
-        width: 112px;
-        height: 68px;
-        object-fit: contain;
-        flex-shrink: 0;
-      }
+&#x20;       display: table-row;
 
-      .experience-info {
-        min-width: 0;
-        font-size: 13px;
-        line-height: 1.48;
-      }
+&#x20;     }
 
-      .experience-info strong {
-        font-size: 13.5px;
-      }
 
-      .service-logo-group {
-        width: 112px;
-        flex-shrink: 0;
-        text-align: center;
-      }
 
-      .service-logo-main {
-        width: 96px;
-        height: 48px;
-        object-fit: contain;
-        display: block;
-        margin: 0 auto 6px auto;
-      }
+&#x20;     .profile-text-cell {
 
-      .service-logo-row {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 6px;
-      }
+&#x20;       padding: 2.5%;
 
-      .service-logo-small {
-        width: 50px;
-        height: 32px;
-        object-fit: contain;
-      }
+&#x20;       width: 63%;
 
-      @media screen and (max-width: 650px) {
-        body {
-          margin: 0;
-        }
+&#x20;       vertical-align: middle;
 
-        .profile-table,
-        .profile-table tbody,
-        .profile-row,
-        .profile-text-cell,
-        .profile-image-cell {
-          display: block;
-          width: 100% !important;
-          max-width: 100% !important;
-          box-sizing: border-box;
-        }
+&#x20;     }
 
-        .profile-row {
-          display: flex;
-          flex-direction: column-reverse;
-          align-items: center;
-        }
 
-        .profile-text-cell {
-          padding: 16px 20px 8px 20px;
-          text-align: left;
-        }
 
-        .profile-image-cell {
-          padding: 24px 20px 4px 20px;
-        }
+&#x20;     .profile-image-cell {
 
-        .profile-photo-wrapper {
-          width: min(62vw, 220px);
-          height: min(62vw, 220px);
-        }
+&#x20;       padding: 2.5%;
 
-        .bio-text {
-          font-size: 105%;
-          line-height: 1.55;
-          letter-spacing: 0.005em;
-        }
+&#x20;       width: 37%;
 
-        .name {
-          text-align: center !important;
-          margin-top: 0;
-          margin-bottom: 8px;
-        }
+&#x20;       max-width: 37%;
 
-        .experience-grid {
-          grid-template-columns: 1fr;
-          gap: 12px;
-          padding: 0 16px 24px 16px;
-        }
+&#x20;       overflow: hidden;
 
-        .experience-card {
-          min-height: auto;
-          padding: 10px 4px;
-        }
+&#x20;       text-align: center;
 
-        .experience-logo,
-        .service-logo-group {
-          width: 100px;
-        }
+&#x20;       vertical-align: middle;
 
-        .experience-logo {
-          height: 60px;
-        }
-      }
-    </style>
-  </head>
+&#x20;     }
 
-  <body>
-    <table style="width:100%;max-width:800px;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;"><tbody>
-      <tr style="padding:0px">
-        <td style="padding:0px">
 
-          <table class="profile-table" style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;"><tbody>
-            <tr class="profile-row">
-              <td class="profile-text-cell">
-                <p class="name" style="text-align: center; font-weight: bold;">
-                  Hyun Jin Cho
-                </p>
-                <br>
-                <p class="bio-text">
-                  I am currently a PhD student in Computer Science at the <a href="https://www.birmingham.ac.uk/">University of Birmingham</a>, advised by Prof. <a href="https://cvlab-uob.github.io">Hyung Jin Chang</a> and Prof. <a href="https://www.birmingham.ac.uk/research/centres-institutes/research-in-computer-science/science-for-ai-ai-for-science/intelligent-robotics-lab-irlab/irlab-staff">Aleš Leonardis</a>.
-                  I received my M.S. in Advanced Imaging Science from Chung-Ang University in 2025, advised by Prof. <a href="https://www.vilab.cau.ac.kr/">Jongwon Choi</a>. 
-                  My PhD research will focus on inclusive 3D human understanding for XR and assistive interaction. 
-                  In this direction, I will also contribute to a Google-funded project, 
-                  "Improving Accessibility and Equitability in Human Understanding for XR," supported by a 
-                  <a href="https://research.google/">Google Unrestricted Research Gift</a> awarded to our research group.
-                </p>
-                <p style="text-align: center;">
-                  <a href="https://chojinie.github.io/blog/" target="_blank" rel="noopener noreferrer">Blog</a>
-                  &nbsp;/&nbsp;
-                  <a href="https://www.linkedin.com/in/chohyunjin/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
-                  &nbsp;/&nbsp;
-                  <a href="https://scholar.google.com/citations?user=l1VqKD4AAAAJ&hl=ko" target="_blank" rel="noopener noreferrer">Google Scholar</a>
-                  &nbsp;/&nbsp;
-                  <a href="https://github.com/chojinie" target="_blank" rel="noopener noreferrer">GitHub</a>
-                  &nbsp;/&nbsp;
-                  <a href="https://chojinie.github.io/time/" target="_blank" rel="noopener noreferrer">Time</a>
-                  &nbsp;/&nbsp;
-                </p>
 
-              </td>
+&#x20;     .bio-text {
 
-              <td class="profile-image-cell">
-                <div class="profile-photo-wrapper">
-                  <img 
-                    class="profile-photo"
-                    alt="profile photo" 
-                    src="images/chohyunjin.jpg">
-                </div>
-              </td>
-            </tr>
-          </tbody></table>
+&#x20;       font-size: 115%;
 
-          <!-- Publications -->
-          <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;"><tbody>
-            <tr>
-              <td style="padding:16px;width:100%;vertical-align:middle">
-                <h2>PUBLICATIONS</h2>
-                <p>
-                  I'm interested in computer vision, deep learning, 3D human understanding, and human-centred AI. Most of my research is about recovering and modelling humans in 3D (shape, pose, motion, etc) from images, with applications in XR and assistive interaction.
-                </p>
-              </td>
-            </tr>
-          </tbody></table>
+&#x20;       letter-spacing: 0.01em;
 
-          <table style="width:100%;border:0px;border-spacing:0px 10px;border-collapse:separate;margin-right:auto;margin-left:auto;"><tbody>
-            <tr>
-              <td style="padding:16px;width:45%;vertical-align:middle">
-                <img src="images/overall_framework.png" style="width:100%;display:block;">
-              </td>
-              <td style="padding:16px;width:55%;vertical-align:middle">
-                <a href="https://ieeexplore.ieee.org/document/11585792">
-                  <span class="papertitle">Reference-Based Microscopic Defect Detection in High Resolution Printed Media Using Learnable Frequency Decomposition</span>
-                </a>
-                <br>
-                Wonwoo No, <strong>Hyunjin Cho</strong>, Hong-In Won, Hyunchul Tae
-                <br>
-                <em>IEEE Access</em>, vol. 14, pp. 100496–100507, 2026
-                <br>
-                <small>Work done at KITECH</small>
-                <br><br>
-                <a href="https://ieeexplore.ieee.org/document/11585792">paper</a> /
-                <a href="https://doi.org/10.1109/ACCESS.2026.3707905">DOI</a> /
-                <a href="data/IEEE Xplore Citation BibTeX Download 2026.7.4.20.22.34.bib">bibtex</a>
-              </td>
-            </tr>
-            <tr onmouseout="ajahr_stop()" onmouseover="ajahr_start()" bgcolor="#ffffd0">
-              <td style="padding:16px;width:45%;vertical-align:middle">
-                <img id='ajahr_image_main' src='images/AJAHR_teaser.jpg' style="width:100%;display:block;">
-                <script type="text/javascript">
-                  function ajahr_start() {
-                    document.getElementById('ajahr_image_main').style.opacity = "1";
-                  }
-                  function ajahr_stop() {
-                    document.getElementById('ajahr_image_main').style.opacity = "1";
-                  }
-                </script>
-              </td>
-              <td style="padding:16px;width:55%;vertical-align:middle">
-                <a href="https://arxiv.org/abs/2509.19939">
-                  <span class="papertitle">AJAHR: Amputated Joint Aware 3D Human Mesh Recovery</span>
-                </a>
-                <br>
-                <strong>Hyunjin Cho</strong>*, Giyun Choi*, <a href="https://www.vilab.cau.ac.kr/">Jongwon Choi</a>
-                <br>
-                <em>ICCV</em>, 2025 &nbsp;(* Equal Contribution)
-                <br><br>
-                <a href="https://chojinie.github.io/project_AJAHR/">project page</a> /
-                <a href="https://arxiv.org/abs/2509.19939">arXiv</a> /
-                <a href="https://chojinie.github.io/project_AJAHR/static/pdfs/8295_supp.pdf">supplement</a> /
-                <a href="data/cho2025ajahr.bib">bibtex</a>
-              </td>
-            </tr>
-            <tr>
-              <td style="padding:16px;width:45%;vertical-align:middle">
-                <img src="images/style_transfer.png" style="width:100%;display:block;">
-              </td>
-              <td style="padding:16px;width:55%;vertical-align:middle">
-                <a href="https://ieeexplore.ieee.org/document/10444215">
-                  <span class="papertitle">Domain Generalization for Face Forgery Detection by Style Transfer</span>
-                </a>
-                <br>
-                Taehoon Kim, Jongwook Choi, <strong>Hyunjin Cho</strong>, Hyoungjun Lim, Jongwon Choi
-                <br>
-                <em>ICCE</em>, 2024
-                <a href="https://ieeexplore.ieee.org/document/10444215">paper</a> /
-                <a href="10.1109/ICCE59016.2024.10444215">DOI</a> /
-              </td>
-            </tr>
-          </tbody></table>
+&#x20;       line-height: 1.65;
 
-          <!-- Education -->
-          <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;"><tbody>
-            <tr>
-              <td class="section-heading">
-                <h2>EDUCATION</h2>
-              </td>
-            </tr>
-          </tbody></table>
+&#x20;     }
 
-          <div class="experience-grid">
-            <div class="experience-card">
-              <img src="images/hcvl.webp" class="experience-logo" alt="University of Birmingham">
-              <div class="experience-info">
-                <strong>PhD Student, Computer Science</strong><br>
-                University of Birmingham, UK<br>
-                Advisor: Prof. Hyungjin Chang & Ales Leonardis &nbsp;·&nbsp; 2026 ~
-              </div>
-            </div>
 
-            <div class="experience-card">
-              <img src="images/cau.png" class="experience-logo" alt="Chung-Ang University">
-              <div class="experience-info">
-                <strong>M.S. in Advanced Imaging Science</strong><br>
-                Chung-Ang University, Seoul, Korea<br>
-                Advisor: Prof. Jongwon Choi &nbsp;·&nbsp; 2025
-              </div>
-            </div>
 
-            <div class="experience-card">
-              <img src="images/cau.png" class="experience-logo" alt="Chung-Ang University">
-              <div class="experience-info">
-                <strong>B.S. in Electrical and Electronic Engineering</strong><br>
-                Chung-Ang University, Seoul, Korea<br>
-                2019
-              </div>
-            </div>
+&#x20;     .profile-photo-wrapper {
 
-            <div class="experience-card">
-              <img src="images/sinsung.png" class="experience-logo" alt="Shinsung Highschool">
-              <div class="experience-info">
-                <strong>High School (2nd Cohort, School Dormitory Program)</strong><br>
-                Shinsung Highschool, Anyang, Korea<br>
-                2010
-              </div>
-            </div>
-          </div>
+&#x20;       width: clamp(180px, 26vw, 220px);
 
-          <!-- Experience -->
-          <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;"><tbody>
-            <tr>
-              <td class="section-heading">
-                <h2>EXPERIENCE</h2>
-              </td>
-            </tr>
-          </tbody></table>
+&#x20;       height: clamp(180px, 26vw, 220px);
 
-          <div class="experience-grid">
-            <div class="experience-card">
-              <img src="images/kitech.png" class="experience-logo" alt="KITECH">
-              <div class="experience-info">
-                <strong>Researcher</strong><br>
-                Manufacturing AI Research Center at KITECH (MAIK)<br>
-                Incheon, Korea &nbsp;·&nbsp; 2026
-              </div>
-            </div>
+&#x20;       border-radius: 50%;
 
-            <div class="experience-card">
-              <img src="images/snuailab.png" class="experience-logo" alt="SNU AILab">
-              <div class="experience-info">
-                <strong>Research Intern</strong><br>
-                SNU AILab, Suwon, Korea<br>
-                2025
-              </div>
-            </div>
+&#x20;       overflow: hidden;
 
-            <div class="experience-card">
-              <img src="images/vilab.png" class="experience-logo" alt="VILAB">
-              <div class="experience-info">
-                <strong>Research Assistant</strong><br>
-                VILAB, Chung-Ang University, Seoul, Korea<br>
-                2025
-              </div>
-            </div>
+&#x20;       margin: auto;
 
-            <div class="experience-card">
-              <img src="images/fasoo.png" class="experience-logo" alt="Fasoo">
-              <div class="experience-info">
-                <strong>SDR</strong><br>
-                Fasoo, Seoul, Korea<br>
-                2023
-              </div>
-            </div>
-          </div>
+&#x20;     }
 
-          <!-- TALKS & PRESENTATIONS-->
-          <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;"><tbody>
-            <tr>
-              <td class="section-heading">
-                <h2>TALKS & PRESENSTATIONS</h2>
-              </td>
-            </tr>
-          </tbody></table>
-          <div class="experience-grid">
-            <div class="experience-card">
-              <img src="images/bmva.png" class="experience-logo" alt="BMVA Symposium Accepted Talks">
-              <div class="experience-info">
-                <strong>BMVA Symposium on Human Behaviour Understanding</strong><br>
-                Amputated Joint Aware 3D Human Mesh Recovery: Toward Inclusive Body Understanding, London, UK<br>
-                2026
-              </div>
-            </div>
-          <!-- ACADEMIC SERVICE -->
-          <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;"><tbody>
-            <tr>
-              <td class="section-heading">
-                <h2>ACADEMIC SERVICE</h2>
-              </td>
-            </tr>
-          </tbody></table>
-          <div class="experience-grid">
-            <div class="experience-card">
-              <img src="images/accv_2026.webp" class="experience-logo" alt="ACCV Reviewer">
-              <div class="experience-info">
-                <strong>Reviewer, ACCV 2026</strong><br>
-                Asian Conference on Computer Vision, Osaka, Japan<br>
-                2026
-              </div>
-            </div>
 
-          <!-- Other Experience -->
-          <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;"><tbody>
-            <tr>
-              <td class="section-heading">
-                <h2>OTHER EXPERIENCE</h2>
-              </td>
-            </tr>
-          </tbody></table>
-          <div class="experience-grid">
-          
-            <div class="experience-card">
-              <img src="images/demoday.png" class="experience-logo" alt="Entrepreneurship competition">
-              <div class="experience-info">
-                <strong>Second Prize, AI Tech Entrepreneurship Competition</strong><br>
-                Chung-Ang University, Seoul, Korea<br>
-                2024
-              </div>
-            </div>
-          
-            <div class="experience-card">
-              <div class="service-logo-group" aria-label="Alternative military service and assigned institutions">
-                <img src="images/kongik.png" class="service-logo-main" alt="Social Service Agent">
-                <div class="service-logo-row">
-                  <img src="images/itc.jpg" class="service-logo-small" alt="Incheon Transit Corporation">
-                  <img src="images/okryun.jfif" class="service-logo-small" alt="Okryun Girls' High School">
-                </div>
-              </div>
-          
-              <div class="experience-info">
-                <strong>Social Service Agent (Alternative Military Service)</strong><br>
-                Republic of Korea<br>
-                Served at Incheon Transit Corporation and Okryun Girls' High School &nbsp;·&nbsp; 2015
-              </div>
-            </div>
-          
-            <div class="experience-card">
-              <img src="images/angrang.png" class="experience-logo" alt="Chung-Ang University PR Ambassador">
-              <div class="experience-info">
-                <strong>University PR Ambassador (중앙사랑), 20th Generation</strong><br>
-                Chung-Ang University, Seoul, Korea<br>
-                Public Relations Office Intern &nbsp;·&nbsp; 2013
-              </div>
-            </div>
-          </div>
-        </td>
-      </tr>
-    </tbody></table>
-  </body>
-</html>
+
+&#x20;     .profile-photo {
+
+&#x20;       width: 100%;
+
+&#x20;       height: 100%;
+
+&#x20;       display: block;
+
+&#x20;       object-fit: cover;
+
+&#x20;       object-position: center 30%;
+
+&#x20;       transform: scale(1.20);
+
+&#x20;     }
+
+
+
+
+
+&#x20;     .section-heading {
+
+&#x20;       padding: 16px;
+
+&#x20;       width: 100%;
+
+&#x20;       vertical-align: middle;
+
+&#x20;     }
+
+
+
+&#x20;     .experience-grid {
+
+&#x20;       display: grid;
+
+&#x20;       grid-template-columns: repeat(2, minmax(0, 1fr));
+
+&#x20;       gap: 22px 24px;
+
+&#x20;       padding: 4px 16px 28px 16px;
+
+&#x20;       box-sizing: border-box;
+
+&#x20;     }
+
+
+
+&#x20;     .experience-card {
+
+&#x20;       display: flex;
+
+&#x20;       align-items: center;
+
+&#x20;       gap: 16px;
+
+&#x20;       min-height: 106px;
+
+&#x20;       padding: 12px 14px;
+
+&#x20;       box-sizing: border-box;
+
+&#x20;     }
+
+
+
+&#x20;     .experience-logo {
+
+&#x20;       width: 112px;
+
+&#x20;       height: 68px;
+
+&#x20;       object-fit: contain;
+
+&#x20;       flex-shrink: 0;
+
+&#x20;     }
+
+
+
+&#x20;     .experience-info {
+
+&#x20;       min-width: 0;
+
+&#x20;       font-size: 13px;
+
+&#x20;       line-height: 1.48;
+
+&#x20;     }
+
+
+
+&#x20;     .experience-info strong {
+
+&#x20;       font-size: 13.5px;
+
+&#x20;     }
+
+
+
+&#x20;     .service-logo-group {
+
+&#x20;       width: 112px;
+
+&#x20;       flex-shrink: 0;
+
+&#x20;       text-align: center;
+
+&#x20;     }
+
+
+
+&#x20;     .service-logo-main {
+
+&#x20;       width: 96px;
+
+&#x20;       height: 48px;
+
+&#x20;       object-fit: contain;
+
+&#x20;       display: block;
+
+&#x20;       margin: 0 auto 6px auto;
+
+&#x20;     }
+
+
+
+&#x20;     .service-logo-row {
+
+&#x20;       display: flex;
+
+&#x20;       align-items: center;
+
+&#x20;       justify-content: center;
+
+&#x20;       gap: 6px;
+
+&#x20;     }
+
+
+
+&#x20;     .service-logo-small {
+
+&#x20;       width: 50px;
+
+&#x20;       height: 32px;
+
+&#x20;       object-fit: contain;
+
+&#x20;     }
+
+
+
+&#x20;     @media screen and (max-width: 650px) {
+
+&#x20;       body {
+
+&#x20;         margin: 0;
+
+&#x20;       }
+
+
+
+&#x20;       .profile-table,
+
+&#x20;       .profile-table tbody,
+
+&#x20;       .profile-row,
+
+&#x20;       .profile-text-cell,
+
+&#x20;       .profile-image-cell {
+
+&#x20;         display: block;
+
+&#x20;         width: 100% !important;
+
+&#x20;         max-width: 100% !important;
+
+&#x20;         box-sizing: border-box;
+
+&#x20;       }
+
+
+
+&#x20;       .profile-row {
+
+&#x20;         display: flex;
+
+&#x20;         flex-direction: column-reverse;
+
+&#x20;         align-items: center;
+
+&#x20;       }
+
+
+
+&#x20;       .profile-text-cell {
+
+&#x20;         padding: 16px 20px 8px 20px;
+
+&#x20;         text-align: left;
+
+&#x20;       }
+
+
+
+&#x20;       .profile-image-cell {
+
+&#x20;         padding: 24px 20px 4px 20px;
+
+&#x20;       }
+
+
+
+&#x20;       .profile-photo-wrapper {
+
+&#x20;         width: min(62vw, 220px);
+
+&#x20;         height: min(62vw, 220px);
+
+&#x20;       }
+
+
+
+&#x20;       .bio-text {
+
+&#x20;         font-size: 105%;
+
+&#x20;         line-height: 1.55;
+
+&#x20;         letter-spacing: 0.005em;
+
+&#x20;       }
+
+
+
+&#x20;       .name {
+
+&#x20;         text-align: center !important;
+
+&#x20;         margin-top: 0;
+
+&#x20;         margin-bottom: 8px;
+
+&#x20;       }
+
+
+
+&#x20;       .experience-grid {
+
+&#x20;         grid-template-columns: 1fr;
+
+&#x20;         gap: 12px;
+
+&#x20;         padding: 0 16px 24px 16px;
+
+&#x20;       }
+
+
+
+&#x20;       .experience-card {
+
+&#x20;         min-height: auto;
+
+&#x20;         padding: 10px 4px;
+
+&#x20;       }
+
+
+
+&#x20;       .experience-logo,
+
+&#x20;       .service-logo-group {
+
+&#x20;         width: 100px;
+
+&#x20;       }
+
+
+
+&#x20;       .experience-logo {
+
+&#x20;         height: 60px;
+
+&#x20;       }
+
+&#x20;     }
+
+&#x20;   \</style>
+
+&#x20; \</head>
+
+
+
+&#x20; \<body>
+
+&#x20;   \<table style="width:100%;max-width:800px;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">\<tbody>
+
+&#x20;     \<tr style="padding:0px">
+
+&#x20;       \<td style="padding:0px">
+
+
+
+&#x20;         \<table class="profile-table" style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">\<tbody>
+
+&#x20;           \<tr class="profile-row">
+
+&#x20;             \<td class="profile-text-cell">
+
+&#x20;               \<p class="name" style="text-align: center; font-weight: bold;">
+
+&#x20;                 Hyun Jin Cho
+
+&#x20;               \</p>
+
+&#x20;               \<br>
+
+&#x20;               \<p class="bio-text">
+
+&#x20;                 I am currently a PhD student in Computer Science at the \<a href="https\://www\.birmingham.ac.uk/">University of Birmingham\</a>, advised by Prof. \<a href="https\://cvlab-uob.github.io">Hyung Jin Chang\</a> and Prof. \<a href="https\://www\.birmingham.ac.uk/research/centres-institutes/research-in-computer-science/science-for-ai-ai-for-science/intelligent-robotics-lab-irlab/irlab-staff">Aleš Leonardis\</a>.
+
+&#x20;                 I received my M.S. in Advanced Imaging Science from Chung-Ang University in 2025, advised by Prof. \<a href="https\://www\.vilab.cau.ac.kr/">Jongwon Choi\</a>.&#x20;
+
+&#x20;                 My PhD research will focus on inclusive 3D human understanding for XR and assistive interaction.&#x20;
+
+&#x20;                 In this direction, I will also contribute to a Google-funded project,&#x20;
+
+&#x20;                 "Improving Accessibility and Equitability in Human Understanding for XR," supported by a&#x20;
+
+&#x20;                 \<a href="https\://research.google/">Google Unrestricted Research Gift\</a> awarded to our research group.
+
+&#x20;               \</p>
+
+&#x20;               \<p style="text-align: center;">
+
+&#x20;                 \<a href="https\://chojinie.github.io/blog/" target="\_blank" rel="noopener noreferrer">Blog\</a>
+
+&#x20;                 &nbsp;/&nbsp;
+
+&#x20;                 \<a href="https\://www\.linkedin.com/in/chohyunjin/" target="\_blank" rel="noopener noreferrer">LinkedIn\</a>
+
+&#x20;                 &nbsp;/&nbsp;
+
+&#x20;                 \<a href="https\://scholar.google.com/citations?user=l1VqKD4AAAAJ&hl=ko" target="\_blank" rel="noopener noreferrer">Google Scholar\</a>
+
+&#x20;                 &nbsp;/&nbsp;
+
+&#x20;                 \<a href="https\://github.com/chojinie" target="\_blank" rel="noopener noreferrer">GitHub\</a>
+
+&#x20;                 &nbsp;/&nbsp;
+
+&#x20;                 \<a href="https\://chojinie.github.io/time/" target="\_blank" rel="noopener noreferrer">Time\</a>
+
+&#x20;                 &nbsp;/&nbsp;
+
+&#x20;               \</p>
+
+
+
+&#x20;             \</td>
+
+
+
+&#x20;             \<td class="profile-image-cell">
+
+&#x20;               \<div class="profile-photo-wrapper">
+
+&#x20;                 \<img&#x20;
+
+&#x20;                   class="profile-photo"
+
+&#x20;                   alt="profile photo"&#x20;
+
+&#x20;                   src="images/chohyunjin.jpg">
+
+&#x20;               \</div>
+
+&#x20;             \</td>
+
+&#x20;           \</tr>
+
+&#x20;         \</tbody>\</table>
+
+
+
+&#x20;         \<!-- Publications -->
+
+&#x20;         \<table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">\<tbody>
+
+&#x20;           \<tr>
+
+&#x20;             \<td style="padding:16px;width:100%;vertical-align:middle">
+
+&#x20;               \<h2>PUBLICATIONS\</h2>
+
+&#x20;               \<p>
+
+&#x20;                 I'm interested in computer vision, deep learning, 3D human understanding, and human-centred AI. Most of my research is about recovering and modelling humans in 3D (shape, pose, motion, etc) from images, with applications in XR and assistive interaction.
+
+&#x20;               \</p>
+
+&#x20;             \</td>
+
+&#x20;           \</tr>
+
+&#x20;         \</tbody>\</table>
+
+
+
+&#x20;         \<table style="width:100%;border:0px;border-spacing:0px 10px;border-collapse:separate;margin-right:auto;margin-left:auto;">\<tbody>
+
+&#x20;           \<tr>
+
+&#x20;             \<td style="padding:16px;width:45%;vertical-align:middle">
+
+&#x20;               \<img src="images/overall_framework.png" style="width:100%;display:block;">
+
+&#x20;             \</td>
+
+&#x20;             \<td style="padding:16px;width:55%;vertical-align:middle">
+
+&#x20;               \<a href="https\://ieeexplore.ieee.org/document/11585792">
+
+&#x20;                 \<span class="papertitle">Reference-Based Microscopic Defect Detection in High Resolution Printed Media Using Learnable Frequency Decomposition\</span>
+
+&#x20;               \</a>
+
+&#x20;               \<br>
+
+&#x20;               Wonwoo No, \<strong>Hyunjin Cho\</strong>, Hong-In Won, Hyunchul Tae
+
+&#x20;               \<br>
+
+&#x20;               \<em>IEEE Access\</em>, vol. 14, pp. 100496–100507, 2026
+
+&#x20;               \<br>
+
+&#x20;               \<small>Work done at KITECH\</small>
+
+&#x20;               \<br>\<br>
+
+&#x20;               \<a href="https\://ieeexplore.ieee.org/document/11585792">paper\</a> /
+
+&#x20;               \<a href="https\://doi.org/10.1109/ACCESS.2026.3707905">DOI\</a> /
+
+&#x20;               \<a href="data/IEEE Xplore Citation BibTeX Download 2026.7.4.20.22.34.bib">bibtex\</a>
+
+&#x20;             \</td>
+
+&#x20;           \</tr>
+
+&#x20;           \<tr onmouseout="ajahr_stop()" onmouseover="ajahr_start()" *bgcolor*="#ffffd0">
+
+&#x20;             \<td style="padding:16px;width:45%;vertical-align:middle">
+
+&#x20;               \<img id='ajahr_image_main' src='images/AJAHR_teaser.jpg' style="width:100%;display:block;">
+
+&#x20;               \<script type="text/javascript">
+
+&#x20;                 function ajahr_start() {
+
+&#x20;                   document.getElementById('ajahr_image_main').style.opacity = "1";
+
+&#x20;                 }
+
+&#x20;                 function ajahr_stop() {
+
+&#x20;                   document.getElementById('ajahr_image_main').style.opacity = "1";
+
+&#x20;                 }
+
+&#x20;               \</script>
+
+&#x20;             \</td>
+
+&#x20;             \<td style="padding:16px;width:55%;vertical-align:middle">
+
+&#x20;               \<a href="https\://arxiv.org/abs/2509.19939">
+
+&#x20;                 \<span class="papertitle">AJAHR: Amputated Joint Aware 3D Human Mesh Recovery\</span>
+
+&#x20;               \</a>
+
+&#x20;               \<br>
+
+&#x20;               \<strong>Hyunjin Cho\</strong>\*, Giyun Choi\*, \<a href="https\://www\.vilab.cau.ac.kr/">Jongwon Choi\</a>
+
+&#x20;               \<br>
+
+&#x20;               \<em>ICCV\</em>, 2025 &nbsp;(\* Equal Contribution)
+
+&#x20;               \<br>\<br>
+
+&#x20;               \<a href="https\://chojinie.github.io/project_AJAHR/">project page\</a> /
+
+&#x20;               \<a href="https\://arxiv.org/abs/2509.19939">arXiv\</a> /
+
+&#x20;               \<a href="https\://chojinie.github.io/project_AJAHR/static/pdfs/8295_supp.pdf">supplement\</a> /
+
+&#x20;               \<a href="data/cho2025ajahr.bib">bibtex\</a>
+
+&#x20;             \</td>
+
+&#x20;           \</tr>
+
+&#x20;           \<tr>
+
+&#x20;             \<td style="padding:16px;width:45%;vertical-align:middle">
+
+&#x20;               \<img src="images/style_transfer.png" style="width:100%;display:block;">
+
+&#x20;             \</td>
+
+&#x20;             \<td style="padding:16px;width:55%;vertical-align:middle">
+
+&#x20;               \<a href="https\://ieeexplore.ieee.org/document/10444215">
+
+&#x20;                 \<span class="papertitle">Domain Generalization for Face Forgery Detection by Style Transfer\</span>
+
+&#x20;               \</a>
+
+&#x20;               \<br>
+
+&#x20;               Taehoon Kim, Jongwook Choi, \<strong>Hyunjin Cho\</strong>, Hyoungjun Lim, Jongwon Choi
+
+&#x20;               \<br>
+
+&#x20;               \<em>ICCE\</em>, 2024
+
+&#x20;               \<a href="https\://ieeexplore.ieee.org/document/10444215">paper\</a> /
+
+&#x20;               \<a href="10.1109/ICCE59016.2024.10444215">DOI\</a> /
+
+&#x20;             \</td>
+
+&#x20;           \</tr>
+
+&#x20;         \</tbody>\</table>
+
+
+
+&#x20;         \<!-- Education -->
+
+&#x20;         \<table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">\<tbody>
+
+&#x20;           \<tr>
+
+&#x20;             \<td class="section-heading">
+
+&#x20;               \<h2>EDUCATION\</h2>
+
+&#x20;             \</td>
+
+&#x20;           \</tr>
+
+&#x20;         \</tbody>\</table>
+
+
+
+&#x20;         \<div class="experience-grid">
+
+&#x20;           \<div class="experience-card">
+
+&#x20;             \<img src="images/hcvl.webp" class="experience-logo" alt="University of Birmingham">
+
+&#x20;             \<div class="experience-info">
+
+&#x20;               \<strong>PhD Student, Computer Science\</strong>\<br>
+
+&#x20;               University of Birmingham, UK\<br>
+
+&#x20;               Advisor: Prof. Hyungjin Chang & Ales Leonardis &nbsp;·&nbsp; 2026 \~
+
+&#x20;             \</div>
+
+&#x20;           \</div>
+
+
+
+&#x20;           \<div class="experience-card">
+
+&#x20;             \<img src="images/cau.png" class="experience-logo" alt="Chung-Ang University">
+
+&#x20;             \<div class="experience-info">
+
+&#x20;               \<strong>M.S. in Advanced Imaging Science\</strong>\<br>
+
+&#x20;               Chung-Ang University, Seoul, Korea\<br>
+
+&#x20;               Advisor: Prof. Jongwon Choi &nbsp;·&nbsp; 2025
+
+&#x20;             \</div>
+
+&#x20;           \</div>
+
+
+
+&#x20;           \<div class="experience-card">
+
+&#x20;             \<img src="images/cau.png" class="experience-logo" alt="Chung-Ang University">
+
+&#x20;             \<div class="experience-info">
+
+&#x20;               \<strong>B.S. in Electrical and Electronic Engineering\</strong>\<br>
+
+&#x20;               Chung-Ang University, Seoul, Korea\<br>
+
+&#x20;               2019
+
+&#x20;             \</div>
+
+&#x20;           \</div>
+
+
+
+&#x20;           \<div class="experience-card">
+
+&#x20;             \<img src="images/sinsung.png" class="experience-logo" alt="Shinsung Highschool">
+
+&#x20;             \<div class="experience-info">
+
+&#x20;               \<strong>High School (2nd Cohort, School Dormitory Program)\</strong>\<br>
+
+&#x20;               Shinsung Highschool, Anyang, Korea\<br>
+
+&#x20;               2010
+
+&#x20;             \</div>
+
+&#x20;           \</div>
+
+&#x20;         \</div>
+
+
+
+&#x20;         \<!-- Experience -->
+
+&#x20;         \<table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">\<tbody>
+
+&#x20;           \<tr>
+
+&#x20;             \<td class="section-heading">
+
+&#x20;               \<h2>EXPERIENCE\</h2>
+
+&#x20;             \</td>
+
+&#x20;           \</tr>
+
+&#x20;         \</tbody>\</table>
+
+
+
+&#x20;         \<div class="experience-grid">
+
+&#x20;           \<div class="experience-card">
+
+&#x20;             \<img src="images/kitech.png" class="experience-logo" alt="KITECH">
+
+&#x20;             \<div class="experience-info">
+
+&#x20;               \<strong>Researcher\</strong>\<br>
+
+&#x20;               Manufacturing AI Research Center at KITECH (MAIK)\<br>
+
+&#x20;               Incheon, Korea &nbsp;·&nbsp; 2026
+
+&#x20;             \</div>
+
+&#x20;           \</div>
+
+
+
+&#x20;           \<div class="experience-card">
+
+&#x20;             \<img src="images/snuailab.png" class="experience-logo" alt="SNU AILab">
+
+&#x20;             \<div class="experience-info">
+
+&#x20;               \<strong>Research Intern\</strong>\<br>
+
+&#x20;               SNU AILab, Suwon, Korea\<br>
+
+&#x20;               2025
+
+&#x20;             \</div>
+
+&#x20;           \</div>
+
+
+
+&#x20;           \<div class="experience-card">
+
+&#x20;             \<img src="images/vilab.png" class="experience-logo" alt="VILAB">
+
+&#x20;             \<div class="experience-info">
+
+&#x20;               \<strong>Research Assistant\</strong>\<br>
+
+&#x20;               VILAB, Chung-Ang University, Seoul, Korea\<br>
+
+&#x20;               2025
+
+&#x20;             \</div>
+
+&#x20;           \</div>
+
+
+
+&#x20;           \<div class="experience-card">
+
+&#x20;             \<img src="images/fasoo.png" class="experience-logo" alt="Fasoo">
+
+&#x20;             \<div class="experience-info">
+
+&#x20;               \<strong>SDR\</strong>\<br>
+
+&#x20;               Fasoo, Seoul, Korea\<br>
+
+&#x20;               2023
+
+&#x20;             \</div>
+
+&#x20;           \</div>
+
+&#x20;         \</div>
+
+
+
+&#x20;         \<!-- TALKS & PRESENTATIONS-->
+
+&#x20;         \<table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">\<tbody>
+
+&#x20;           \<tr>
+
+&#x20;             \<td class="section-heading">
+
+&#x20;               \<h2>TALKS & PRESENTATIONS\</h2>
+
+&#x20;             \</td>
+
+&#x20;           \</tr>
+
+&#x20;         \</tbody>\</table>
+
+&#x20;         \<div class="experience-grid">
+
+&#x20;           \<div class="experience-card">
+
+&#x20;             \<img src="images/bmva.png" class="experience-logo" alt="BMVA Symposium Accepted Talks">
+
+&#x20;             \<div class="experience-info">
+
+&#x20;               \<strong>BMVA Symposium on Human Behaviour Understanding\</strong>\<br>
+
+&#x20;               Amputated Joint Aware 3D Human Mesh Recovery: Toward Inclusive Body Understanding, London, UK\<br>
+
+&#x20;               2026
+
+&#x20;             \</div>
+
+&#x20;           \</div>
+
+&#x20;         \<!-- ACADEMIC SERVICE -->
+
+&#x20;         \<table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">\<tbody>
+
+&#x20;           \<tr>
+
+&#x20;             \<td class="section-heading">
+
+&#x20;               \<h2>ACADEMIC SERVICE\</h2>
+
+&#x20;             \</td>
+
+&#x20;           \</tr>
+
+&#x20;         \</tbody>\</table>
+
+&#x20;         \<div class="experience-grid">
+
+&#x20;           \<div class="experience-card">
+
+&#x20;             \<img src="images/accv_2026.webp" class="experience-logo" alt="ACCV Reviewer">
+
+&#x20;             \<div class="experience-info">
+
+&#x20;               \<strong>Reviewer, ACCV 2026\</strong>\<br>
+
+&#x20;               Asian Conference on Computer Vision, Osaka, Japan\<br>
+
+&#x20;               2026
+
+&#x20;             \</div>
+
+&#x20;           \</div>
+
+
+
+&#x20;         \<!-- Other Experience -->
+
+&#x20;         \<table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;">\<tbody>
+
+&#x20;           \<tr>
+
+&#x20;             \<td class="section-heading">
+
+&#x20;               \<h2>OTHER EXPERIENCE\</h2>
+
+&#x20;             \</td>
+
+&#x20;           \</tr>
+
+&#x20;         \</tbody>\</table>
+
+&#x20;         \<div class="experience-grid">
+
+&#x20;           \<div class="experience-card">
+
+&#x20;             \<img src="images/demoday.png" class="experience-logo" alt="Entrepreneurship competition">
+
+&#x20;             \<div class="experience-info">
+
+&#x20;               \<strong>Second Prize, AI Tech Entrepreneurship Competition\</strong>\<br>
+
+&#x20;               Chung-Ang University, Seoul, Korea\<br>
+
+&#x20;               2024
+
+&#x20;             \</div>
+
+&#x20;           \</div>
+
+&#x20;           \<div class="experience-card">
+
+&#x20;             \<div class="service-logo-group" aria-label="Alternative military service and assigned institutions">
+
+&#x20;               \<img src="images/kongik.png" class="service-logo-main" alt="Social Service Agent">
+
+&#x20;               \<div class="service-logo-row">
+
+&#x20;                 \<img src="images/itc.jpg" class="service-logo-small" alt="Incheon Transit Corporation">
+
+&#x20;                 \<img src="images/okryun.jfif" class="service-logo-small" alt="Okryun Girls' High School">
+
+&#x20;               \</div>
+
+&#x20;             \</div>
+
+&#x20;             \<div class="experience-info">
+
+&#x20;               \<strong>Social Service Agent (Alternative Military Service)\</strong>\<br>
+
+&#x20;               Republic of Korea\<br>
+
+&#x20;               Served at Incheon Transit Corporation and Okryun Girls' High School &nbsp;·&nbsp; 2015
+
+&#x20;             \</div>
+
+&#x20;           \</div>
+
+&#x20;           \<div class="experience-card">
+
+&#x20;             \<img src="images/angrang.png" class="experience-logo" alt="Chung-Ang University PR Ambassador">
+
+&#x20;             \<div class="experience-info">
+
+&#x20;               \<strong>University PR Ambassador (중앙사랑), 20th Generation\</strong>\<br>
+
+&#x20;               Chung-Ang University, Seoul, Korea\<br>
+
+&#x20;               Public Relations Office Intern &nbsp;·&nbsp; 2013
+
+&#x20;             \</div>
+
+&#x20;           \</div>
+
+&#x20;         \</div>
+
+&#x20;       \</td>
+
+&#x20;     \</tr>
+
+&#x20;   \</tbody>\</table>
+
+&#x20; \</body>
+
+\</html>
